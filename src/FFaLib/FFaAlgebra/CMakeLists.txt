@@ -18,7 +18,7 @@ set ( COMPONENT_FILE_LIST FFa3DLocation FFa3PArc FFaAlgebra FFaBody
                           FFaTensor1 FFaTensor2 FFaTensor3
                           FFaTensorTransforms
                           FFaUnitCalculator
-                          FFaVolume
+                          FFaVolume FFaSpline
 )
 
 ## Pure implementation files, i.e., source files without corresponding header
