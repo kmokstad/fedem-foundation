@@ -15,6 +15,7 @@
 
 int BodyTest (const std::string& fname, double z0, double z1);
 int GeometryTest (const char* fname, std::istream* pointdata = NULL);
+int SplineTest (const char* fname, size_t nSample);
 
 
 int main (int argc, char** argv)
@@ -40,6 +41,12 @@ int main (int argc, char** argv)
       ierr = GeometryTest(argv[2]);
     if (ierr)
       std::cerr <<" *** GeometryTest returned "<< ierr << std::endl;
+  }
+  if (argc > 2 && strcmp(argv[1],"-spline") == 0)
+  {
+    size_t nSample = argc > 3 ? atoi(argv[3]) : 100;
+    if ((ierr = SplineTest(argv[2],nSample)))
+      std::cerr <<" *** SplineTest returned "<< ierr << std::endl;
   }
   else if (argc > 1)
   {
@@ -71,7 +78,7 @@ int main (int argc, char** argv)
   }
   else
     std::cerr <<"usage: "<< argv[0] <<" [-body <filename> [z0 [z1] |"
-              <<" -geometry <filename> [points]]"
+              <<" -geometry <filename> [points] | -spline <filename> [nsample]"
               << std::endl;
 
   return ierr;

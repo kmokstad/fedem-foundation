@@ -21,6 +21,8 @@
 #include <array>
 
 int BodyTest (const std::string& fname, double z0, double z1);
+int spline_test (const std::string& name, size_t nSample,
+                 std::vector<FaVec3>* samples);
 
 static std::string srcdir; //!< Full path of the source directory of this test
 
@@ -292,4 +294,22 @@ TEST(TestFFa,String)
   std::cout <<"FixDof: \""<< FixDof <<"\""<< std::endl;
   EXPECT_FALSE(FFaString("jalla #FixX").hasSubString(FixDof));
   EXPECT_TRUE(FFaString("peder #FixY").hasSubString(FixDof));
+}
+
+
+/*!
+  Creates some spline evaluation tests.
+*/
+
+TEST(TestFFaSpline,Evaluate)
+{
+  ASSERT_FALSE(srcdir.empty());
+  std::vector<FaVec3> samples;
+  int istat = spline_test(srcdir+"points.txt",10,&samples);
+  ASSERT_GT(istat,0);
+  EXPECT_TRUE(samples.front().equals(FaVec3())); // start point
+  EXPECT_TRUE(samples.back().equals(FaVec3(1.5,2.4,0.0))); // end point
+  EXPECT_TRUE(samples[1].equals(FaVec3(0.484881,0.565252,0.0),1.0e-5)); // arbitrary point
+  EXPECT_TRUE(samples[4].equals(FaVec3(2.12366,1.10789,0.0),1.0e-5)); // arbitrary point
+  for (const FaVec3& X : samples) std::cout << X << std::endl;
 }
