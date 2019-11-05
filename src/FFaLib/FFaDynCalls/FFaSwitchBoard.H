@@ -64,7 +64,7 @@ public:
   static void init();
 
 private:
-  static void cleanUpAfterSlot(FFaSwitchBoardConnector * aSender, int aSubject, unsigned int typeID);
+  static void cleanUpAfterSlot(FFaSwitchBoardConnector* sender, int subject, unsigned int typeID = 0);
 
   //          map<Sender, map< Subject, SlotTypeId, List of slots  > >
   static std::map<FFaSwitchBoardConnector*, std::map<int,TypeIDToSlotBasePtListMap> >*  ourConnections;
