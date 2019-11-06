@@ -6,7 +6,9 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "FFaLib/FFaDynCalls/FFaSwitchBoard.H"
+#ifdef FFA_DEBUG
 #include <iostream>
+#endif
 
 
 int FFaSlotBase::uniqueTypeId = 0;
@@ -17,15 +19,15 @@ FFaSwitchBoard::SwitchBoardConnection* FFaSwitchBoard::ourConnections = NULL;
 static FFaSlotList::iterator eraseSlot(FFaSwitchBoardConnector* sender, int subject,
                                        FFaSlotList& slots, FFaSlotList::iterator slit)
 {
-  if (!slit->isValid)
+  if (slit->refCount < 0)
     return ++slit;
 
   slit->slotPt->removeConnection(sender,subject);
 
-  if (slit->protectedRefCount < 1)
+  if (slit->refCount < 1)
     return slots.erase(slit);
 
-  slit->isValid = false;
+  slit->refCount = -1;
   return ++slit;
 }
 
@@ -150,14 +152,11 @@ FFaSwitchBoard::nextValidSlot(FFaSlotList::iterator it, FFaSlotList& slots,
   }
   else
   {
-    if (--(it->protectedRefCount) < 0)
-      std::cerr <<"Error: FFaSwitchBoard: Negative protectedRefcount"<< std::endl;
-
 #ifdef FFA_DEBUG
     for (FFaSlotList::iterator j = slots.begin(); j != it && j != slots.end(); ++j)
       ++islot;
 #endif
-    if (!it->isValid)
+    if (it->refCount < 0)
     {
 #ifdef FFA_DEBUG
       std::cout <<"\tErasing invalid slot "<< islot << std::endl;
@@ -166,6 +165,7 @@ FFaSwitchBoard::nextValidSlot(FFaSlotList::iterator it, FFaSlotList& slots,
     }
     else
     {
+      it->refCount--;
       ++it;
 #ifdef FFA_DEBUG
       ++islot;
@@ -174,9 +174,9 @@ FFaSwitchBoard::nextValidSlot(FFaSlotList::iterator it, FFaSlotList& slots,
   }
 
   for (; it != slots.end(); ++it)
-    if (it->isValid)
+    if (it->refCount >= 0)
     {
-      it->protectedRefCount++;
+      it->refCount++;
 #ifdef FFA_DEBUG
       std::cout <<"\tUsing valid slot "<< islot << std::endl;
 #endif
