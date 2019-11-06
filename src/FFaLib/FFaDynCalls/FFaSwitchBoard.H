@@ -13,9 +13,7 @@
 #endif
 
 #include <map>
-#include <set>
 #include <list>
-#include <cstddef>
 
 #include "FFaLib/FFaPatterns/FFaInitialisation.H"
 
@@ -33,7 +31,6 @@ struct FFaSlotBasePt
 };
 
 typedef std::list<FFaSlotBasePt> FFaSlotList;
-typedef std::map<unsigned int,FFaSlotList> TypeIDToSlotBasePtListMap;
 
 typedef void(FFaSwitchBoardConnector::*anyMethodType)(...);
 typedef void(*anyFunctionType)(...);
@@ -65,8 +62,12 @@ public:
 private:
   static void cleanUpAfterSlot(FFaSwitchBoardConnector* sender, int subject);
 
-  //          map<Sender, map< Subject, SlotTypeId, List of slots  > >
-  static std::map<FFaSwitchBoardConnector*, std::map<int,TypeIDToSlotBasePtListMap> >*  ourConnections;
+  typedef std::map<unsigned int,FFaSlotList>         SlotContainer;
+  typedef std::map<int,SlotContainer>                SlotMap;
+  typedef std::map<FFaSwitchBoardConnector*,SlotMap> SwitchBoardConnection;
+
+  // (Sender, Subject, SlotTypeId) --> List of slots
+  static SwitchBoardConnection* ourConnections;
 };
 
 static FFaInitialisation<FFaSwitchBoard> FFaSwitchBoard_Init;
@@ -79,25 +80,15 @@ static FFaInitialisation<FFaSwitchBoard> FFaSwitchBoard_Init;
 class FFaSwitchBoardConnector
 {
 public:
-  FFaSwitchBoardConnector() { IAmDeletingMe = false; }
+  FFaSwitchBoardConnector(const char* s = NULL) : label(s) {}
   virtual ~FFaSwitchBoardConnector();
 
-  // Must only be used by FFaSlotN<*>
-  void removeSlot(FFaSlotBase* slot)
-  {
-    if (!IAmDeletingMe)
-      mySlots.erase(slot);
-  }
-
-  // Must only be used by FFaSlotN<*>
-  void addSlot(FFaSlotBase* slot)
-  {
-    mySlots.insert(slot);
-  }
+  // Mainly for debug output
+  const char* getLabel() const { return label ? label : ""; }
+  void setLabel(const char* s) { label = s; }
 
 private:
-  std::set<FFaSlotBase*, std::less<FFaSlotBase*> > mySlots;
-  bool IAmDeletingMe;
+  const char* label;
 };
 
 
@@ -236,13 +227,9 @@ public:												\
   {												\
     myObject = obj;										\
     myMethodPt = method;									\
-    myObject->addSlot(this);									\
   }												\
 												\
-  virtual ~FFaSlot##nr ()									\
-  {												\
-    myObject->removeSlot(this);									\
-  }												\
+  virtual ~FFaSlot##nr () {}									\
 												\
   virtual void invoke(argumentList)								\
   {												\
@@ -325,7 +312,7 @@ templateDef void FFaSwitchBoardCall(FFaSwitchBoardConnector* sender, int subject
   FFaSlotList& ffSlot = FFaSwitchBoard::getSlots(sender,subject,typeID);				\
   FFaSlotList::iterator it = ffSlot.end();								\
   while ((it = FFaSwitchBoard::nextValidSlot(it,ffSlot,sender,subject)) != ffSlot.end())		\
-    ((FFaSlotBase##nr typeList*)(it->slotPt))->invoke(parameterList);					\
+    static_cast<FFaSlotBase##nr typeList*>(it->slotPt)->invoke(parameterList);				\
 }
 
 FFASWB_MAKE_EMIT_FUNCTION_TEMPLATE(0, inline, , , )
