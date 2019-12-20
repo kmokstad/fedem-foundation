@@ -42,6 +42,7 @@ set ( F90_FILE_LIST FFaMsgInterface
                     waveFunctionsModule
                     explicitFunctions
                     waveFunctions
+                    splineModule
     )
 
 
@@ -79,7 +80,7 @@ if ( USE_FORTRAN )
       list ( INSERT DEPENDENCY_LIST 1 ${CWave_LIBRARY} )
     endif ( CWave_LIBRARY )
   endif ( USE_CWAVE )
-  list ( APPEND DEPENDENCY_LIST FFaCmdLineArg )
+  list ( APPEND DEPENDENCY_LIST FFaCmdLineArg Minpack )
 else ( USE_FORTRAN )
   string ( APPEND CMAKE_CXX_FLAGS " -D_NO_FORTRAN" )
 endif ( USE_FORTRAN )

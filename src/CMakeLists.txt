@@ -20,6 +20,7 @@ message ( STATUS "INFORMATION : Processing unit ${UNIT_ID}" )
 include_directories ( "${CMAKE_CURRENT_SOURCE_DIR}" )
 
 if ( USE_FORTRAN )
+  list ( INSERT LIB_ID_LIST 1 Minpack )
   set ( CMAKE_Fortran_MODULE_DIRECTORY "${PROJECT_BINARY_DIR}/f90_modules" )
 endif ( USE_FORTRAN )
 

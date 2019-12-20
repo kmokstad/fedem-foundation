@@ -1,0 +1,65 @@
+!> @brief Unit tests for the spline module.
+!>
+!> @author Knut Morten Okstad, SAP SE
+!>
+!> @date 21 Dec 2019
+
+@test
+subroutine testSpline
+  use SplineModule, only : dp, addSpline, projectOntoCurve, ffa_erase_splines
+  use pfunit_mod  , only : sourceLocation, anyExceptions
+  use pfunit_mod  , only : assertGreaterThanOrEqual, assertLessThanOrEqual
+
+  implicit none
+
+  integer, parameter :: nprint = 0 ! Print av iterasjonsdata
+  integer, parameter :: lpu    = 6 ! Logical print unit number
+
+  integer  :: ispl(3), ierr
+  real(dp) :: X(3), s
+  real(dp), parameter :: spline1(3*6) = (/ 0.0, 0.0, 0.0, &
+        &                                  1.0, 1.0, 0.0, &
+        &                                  2.0, 1.0, 0.0, &
+        &                                  2.5, 2.0, 0.0, &
+        &                                  2.5, 3.0, 0.0, &
+        &                                  1.5, 2.4, 0.0 /)
+  real(dp), parameter :: spline2(3*5) = (/ 0.0, 0.0, 0.0, &
+        &                                  1.0, 0.0, 0.0, &
+        &                                  1.0, 1.0, 0.0, &
+        &                                  0.0, 1.0, 0.0, &
+        &                                  0.0, 0.0, 0.0 /)
+  real(dp), parameter :: spline3(3*4) = (/ 0.0, 0.0, 0.0, &
+        &                                  1.0, 0.0, 0.0, &
+        &                                  0.5, 0.8860254, 0.0, &
+        &                                  0.0, 0.0, 0.0 /)
+
+  ispl(1) = addSpline(reshape(spline1,(/3,6/)))
+  ispl(2) = addSpline(reshape(spline2,(/3,5/)))
+  ispl(3) = addSpline(reshape(spline3,(/3,4/)))
+
+  s = 0.0_dp
+  call projectOntoCurve (ispl(1),(/2.0_dp,1.0_dp,0.0_dp/),s,X,nprint,lpu,ierr)
+  print *,'projectOntoCurve returned ierr =',ierr
+  @assertGreaterThanOrEqual(ierr,0)
+  @assertLessThanOrEqual(ierr,4)
+  print *,'s = ',s
+  print *,'X = ',X
+
+  s = 0.5_dp
+  call projectOntoCurve (ispl(2),(/0.4_dp,0.0_dp,0.0_dp/),s,X,nprint,lpu,ierr)
+  print *,'projectOntoCurve returned ierr =',ierr
+  @assertGreaterThanOrEqual(ierr,0)
+  @assertLessThanOrEqual(ierr,4)
+  print *,'s = ',s
+  print *,'X = ',X
+
+  call projectOntoCurve (ispl(3),(/0.7_dp,0.0_dp,0.0_dp/),s,X,nprint,lpu,ierr)
+  print *,'projectOntoCurve returned ierr =',ierr
+  @assertGreaterThanOrEqual(ierr,0)
+  @assertLessThanOrEqual(ierr,4)
+  print *,'s = ',s
+  print *,'X = ',X
+
+  call ffa_erase_splines ()
+
+end subroutine testSpline

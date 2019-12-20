@@ -24,7 +24,8 @@ set ( COMPONENT_FILE_LIST FFa3DLocation FFa3PArc FFaAlgebra FFaBody
 ## Pure implementation files, i.e., source files without corresponding header
 set ( SOURCE_FILE_LIST FFaBodyParser )
 if ( "${APPLICATION_ID}" STREQUAL "fedemKernel" )
-  list ( APPEND SOURCE_FILE_LIST FFaBodyHandler_F FFaTensorTransforms_F )
+  list ( APPEND SOURCE_FILE_LIST FFaBodyHandler_F FFaSplineHandler_F
+                                 FFaTensorTransforms_F )
 endif ( "${APPLICATION_ID}" STREQUAL "fedemKernel" )
 
 
@@ -40,7 +41,7 @@ endforeach ( FILE ${SOURCE_FILE_LIST} )
 
 # Dependencies and external libraries
 
-set ( DEPENDENCY_LIST FFaString FFaDefinitions )
+set ( DEPENDENCY_LIST FFaDefinitions FFaString )
 if ( "${APPLICATION_ID}" STREQUAL "fedemKernel" )
   list ( APPEND DEPENDENCY_LIST FFaOS )
   # Include Lapack binding only when building the fedem kernel
