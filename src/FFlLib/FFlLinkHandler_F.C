@@ -476,11 +476,16 @@ SUBROUTINE(ffl_getnodes,FFL_GETNODES) (int& nnod, int& ndof, int* madof,
       Y[inod] = curVertex->y();
       Z[inod] = curVertex->z();
 
-      mnode[inod] = (*nit)->isExternal() ? 2 : 1;
+      mnode[inod] = (*nit)->getStatus() == 13 ? 3 : (*nit)->isExternal() + 1;
       for (int i = 0; i < maxDOFs; i++)
-	msc[ndof+i] = (*nit)->isFixed(i+1) ? 0 : mnode[inod];
+        if ((*nit)->isFixed(i+1))
+          msc[ndof++] = 0;
+        else if (i > 2 && mnode[inod] == 3)
+          msc[ndof++] = 1; // Internal rotational DOF in external node
+        else
+          msc[ndof++] = mnode[inod] > 1 ? 2 : 1;
+
       madof[inod+1] = madof[inod] + maxDOFs;
-      ndof += maxDOFs;
       inod ++;
     }
     else if (maxDOFs > 0)

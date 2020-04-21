@@ -102,7 +102,7 @@ bool FFlFedemWriter::writeNodeData(std::ostream& os, bool writeExtNodes) const
   {
     os <<"NODE{"<< (*nit)->getID() <<" ";
     if (writeExtNodes && (*nit)->isExternal())
-      os << 1;
+      os << (*nit)->getStatus();
     else if ((*nit)->isFixed())
       os << (*nit)->getStatus(-128);
     else

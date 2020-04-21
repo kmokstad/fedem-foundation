@@ -15,24 +15,9 @@
 #include "FFaLib/FFaDefinitions/FFaMsg.H"
 
 
-/*!
-  \class FFlNode FFlNode.H
-  \brief FE node class. Stores node position and additional data for the node.
-*/
-
-FFlNode::FFlNode(int id) : FFlPartBase(id)
-{
-  status = 0; // Default is internal node
-  myDOFCount = 0;
-
-  myVertex = NULL;
-  myResults = NULL;
-}
-
-
 FFlNode::FFlNode(int id, double x, double y, double z, int s) : FFlPartBase(id)
 {
-  status = s;
+  myStatus = s;
   myDOFCount = 0;
 
   myVertex = new FFlVertex(x,y,z);
@@ -45,7 +30,7 @@ FFlNode::FFlNode(int id, double x, double y, double z, int s) : FFlPartBase(id)
 
 FFlNode::FFlNode(int id, const FaVec3& pos, int s) : FFlPartBase(id)
 {
-  status = s;
+  myStatus = s;
   myDOFCount = 0;
 
   myVertex = new FFlVertex(pos);
@@ -58,7 +43,7 @@ FFlNode::FFlNode(int id, const FaVec3& pos, int s) : FFlPartBase(id)
 
 FFlNode::FFlNode(const FFlNode& otherNode) : FFlPartBase(otherNode)
 {
-  status = otherNode.status;
+  myStatus = otherNode.myStatus;
   myDOFCount = otherNode.myDOFCount;
 
   if (otherNode.myVertex)
@@ -100,8 +85,9 @@ void FFlNode::calculateChecksum(FFaCheckSum* cs, int precision,
   if (myVertex)
     cs->add(*myVertex,precision);
 
-  cs->add(includeExtNodeInfo && status == 1);
-  if (status < 0) cs->add((int)status);
+  cs->add(includeExtNodeInfo && myStatus == 1);
+  if (myStatus < 0 || (includeExtNodeInfo && myStatus == 13))
+    cs->add((int)myStatus);
 
   int localCS = myLocalSystem.getID();
   if (localCS > 0) cs->add(localCS);
@@ -152,32 +138,42 @@ void FFlNode::setVertex(FFlVertex* aVertex)
 
 bool FFlNode::setStatus(int newStat)
 {
-  if (status == newStat) return false;
+  if (myStatus == newStat)
+    return false;
 
-  status = newStat;
+  myStatus = newStat;
   return true;
+}
+
+
+int FFlNode::getStatus(int ignore) const
+{
+  return myStatus > ignore ? myStatus : 0;
 }
 
 
 bool FFlNode::setExternal(bool ext)
 {
-  if (status > 1 || status == (int)ext) return false;
+  if (myStatus == 2 || myStatus == 3 || myStatus == (int)ext)
+    return false;
+  else if (myStatus == 13 && ext)
+    return false;
 
-  status = ext;
+  myStatus = ext;
   return true;
 }
 
 
 bool FFlNode::isFixed(int dof) const
 {
-  if (status < 0)
+  if (myStatus < 0)
     switch (dof) {
-    case 1: return -status & 1;
-    case 2: return -status & 2;
-    case 3: return -status & 4;
-    case 4: return -status & 8;
-    case 5: return -status & 16;
-    case 6: return -status & 32;
+    case 1: return -myStatus & 1;
+    case 2: return -myStatus & 2;
+    case 3: return -myStatus & 4;
+    case 4: return -myStatus & 8;
+    case 5: return -myStatus & 16;
+    case 6: return -myStatus & 32;
     default: return true;
     }
 
