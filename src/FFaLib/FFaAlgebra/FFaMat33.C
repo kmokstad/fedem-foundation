@@ -4,6 +4,10 @@
 //
 // This file is part of FEDEM - https://openfedem.org
 ////////////////////////////////////////////////////////////////////////////////
+/*!
+  \file FFaMat33.C
+  \brief Point transformations in 3D space.
+*/
 
 #include "FFaLib/FFaAlgebra/FFaMat33.H"
 #include "FFaLib/FFaAlgebra/FFaMath.H"
@@ -11,14 +15,20 @@
 
 
 /*!
-  Matrix layout :
+  \class FaMat33
 
+  Matrix layout :
+  \code
     [0][0]  [1][0]  [2][0]
 
     [0][1]  [1][1]  [2][1]
 
     [0][2]  [1][2]  [2][2]
+  \endcode
 */
+
+//! \brief Convenience macro for easy matrix element access.
+#define THIS(i,j) this->operator()(i,j)
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -57,15 +67,6 @@ FaMat33::FaMat33 (const FaVec3& v0, const FaVec3& v1, const FaVec3& v2)
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-FaMat33& FaMat33::operator= (const FaMat33& m)
-{
-  v[0] = m.v[0];
-  v[1] = m.v[1];
-  v[2] = m.v[2];
-  return *this;
-}
-
-
 FaMat33& FaMat33::operator+= (const FaMat33& m)
 {
   v[0] += m.v[0];
@@ -98,8 +99,8 @@ FaMat33& FaMat33::operator/= (double d)
   if (fabs(d) < EPS_ZERO)
   {
 #ifdef FFA_DEBUG
-    std::cerr <<"FaMat33::operator/=(double): Division by zero "<< d
-	      << std::endl;
+    std::cerr <<"  ** FaMat33::operator/=(double): Division by zero ("
+              << d <<")"<< std::endl;
 #endif
     v[0] = v[1] = v[2] = FaVec3(HUGE_VAL, HUGE_VAL, HUGE_VAL);
   }
@@ -119,8 +120,6 @@ FaMat33& FaMat33::operator/= (double d)
 // Special functions
 //
 ////////////////////////////////////////////////////////////////////////////////
-
-#define THIS(i,j) this->operator()(i,j)
 
 FaMat33 FaMat33::inverse (double eps) const
 {
@@ -145,19 +144,19 @@ FaMat33 FaMat33::inverse (double eps) const
   }
 #ifdef FFA_DEBUG
   else
-    std::cerr <<"FaMat33::inverse(): Singular matrix, det = "<< std::endl;
+    std::cerr <<"  ** FaMat33::inverse(): Singular matrix, det = "
+              << det << std::endl;
 #endif
 
   return b;
 }
 
 
-FaMat33& FaMat33::setIdentity ()
+void FaMat33::setIdentity ()
 {
   v[0] = FaVec3(1.0, 0.0, 0.0);
   v[1] = FaVec3(0.0, 1.0, 0.0);
   v[2] = FaVec3(0.0, 0.0, 1.0);
-  return *this;
 }
 
 
@@ -186,19 +185,19 @@ FaMat33& FaMat33::shift (int delta)
 }
 
 
-bool FaMat33::isCoincident (const FaMat33& oMat, double tolerance) const
+bool FaMat33::isCoincident (const FaMat33& m, double tolerance) const
 {
-  if (v[0].isParallell(oMat[0],tolerance) != 1) return false;
-  if (v[1].isParallell(oMat[1],tolerance) != 1) return false;
-  if (v[2].isParallell(oMat[2],tolerance) != 1) return false;
+  if (v[0].isParallell(m[0],tolerance) != 1) return false;
+  if (v[1].isParallell(m[1],tolerance) != 1) return false;
+  if (v[2].isParallell(m[2],tolerance) != 1) return false;
   return true;
 }
 
 
 /*!
-  Compute a globalized coordinate system where the X-axis is parallel to the
-  given vector v1, and the two other axes are as close as possible to the
-  corresponding global coordinate axes.
+  The X-axis of the globalized system is set parallel to the vector \a v1,
+  and the two other axes are then set as close as possible to the corresponding
+  global coordinate axis directions.
 */
 
 FaMat33& FaMat33::makeGlobalizedCS (const FaVec3& v1)
@@ -238,10 +237,10 @@ FaMat33& FaMat33::makeGlobalizedCS (const FaVec3& v1)
 
 
 /*!
-  Compute a globalized coordinate system in the plane defined by the two given
-  vectors v1 and v2, such that the local Z-axis is parallell to the normal
-  vector of the plane, and the two other axes are as close as possible to the
-  corresponding global coordinate axes.
+  The XY-plane of the globalized system is defined by the two vectors \a v1
+  and \a v2, such that its local Z-axis is parallel to the normal vector of
+  that plane, and the two other axes are chosen as close as possible to the
+  corresponding global coordinate axis directions.
 */
 
 FaMat33& FaMat33::makeGlobalizedCS (const FaVec3& v1, const FaVec3& v2)
@@ -293,35 +292,36 @@ FaMat33& FaMat33::makeGlobalizedCS (const FaVec3& v1, const FaVec3& v2,
 
 
 /*!
-  Compute an incremental rotation tensor from the given Euler angles.
+  This method assumes the rotation angles are applied in the order
+  X, Y and Z, i.e., R(x,y,z) = R(z)*R(y)*R(x).
 */
 
 FaMat33& FaMat33::eulerRotateZYX (const FaVec3& angles)
 {
-  double ca = cos(angles(3));
-  double cb = cos(angles(2));
-  double cy = cos(angles(1));
+  double cx = cos(angles.x());
+  double cy = cos(angles.y());
+  double cz = cos(angles.z());
 
-  double sa = sin(angles(3));
-  double sb = sin(angles(2));
-  double sy = sin(angles(1));
+  double sx = sin(angles.x());
+  double sy = sin(angles.y());
+  double sz = sin(angles.z());
 
-  THIS(1,1) = ca*cb;
-  THIS(1,2) = ca*sb*sy - sa*cy;
-  THIS(1,3) = ca*sb*cy + sa*sy;
-  THIS(2,1) = sa*cb;
-  THIS(2,2) = sa*sb*sy + ca*cy;
-  THIS(2,3) = sa*sb*cy - ca*sy;
-  THIS(3,1) = -sb;
-  THIS(3,2) = cb*sy;
-  THIS(3,3) = cb*cy;
+  THIS(1,1) =  cz*cy;
+  THIS(1,2) =  cz*sy*sx - sz*cx;
+  THIS(1,3) =  cz*sy*cx + sz*sx;
+  THIS(2,1) =  sz*cy;
+  THIS(2,2) =  sz*sy*sx + cz*cx;
+  THIS(2,3) =  sz*sy*cx - cz*sx;
+  THIS(3,1) = -sy;
+  THIS(3,2) =  cy*sx;
+  THIS(3,3) =  cy*cx;
 
   return *this;
 }
 
 
 /*!
-  Return the Euler angles corresponding to an incremental rotation.
+  This method is supposed to perform the inverse operation of eulerRotateZYX().
 */
 
 FaVec3 FaMat33::getEulerZYX () const
@@ -338,32 +338,100 @@ FaVec3 FaMat33::getEulerZYX () const
 #ifdef FFA_DEBUG
   const char* func = "FaMat33::getEulerZYX";
 #else
-  const char* func = 0;
+  const char* func = NULL;
 #endif
   // New calculation, based on http://www.udel.edu/HNES/HESC427/EULER.DOC
   // See also http://en.wikipedia.org/wiki/Euler_angles
-  double aZ =  atan3(THIS(2,1),THIS(1,1),func);
-  double aY = -atan3(THIS(3,1),hypot(THIS(1,1),THIS(2,1)),func);
-  double aX =  atan3(THIS(3,2),THIS(3,3),func);
+  // See also https://stackoverflow.com/questions/15022630/how-to-calculate-the-angle-from-rotation-matrix
+  double aX, aY, aZ, R31 = THIS(3,1);
+  if (fabs(R31) < 1.0-EPS_ZERO)
+  {
+    aZ = atan3(THIS(2,1),THIS(1,1),func);
+    aY = atan3(-R31,hypot(THIS(1,1),THIS(2,1)),func);
+    aX = atan3(THIS(3,2),THIS(3,3),func);
+  }
+  else
+  {
+    aX = atan3(-THIS(2,3),THIS(2,2));
+    aY = copysign(0.5*M_PI,R31);
+    aZ = 0.0;
+  }
+
   return FaVec3(aX,aY,aZ);
 }
 
 
 /*!
-  Compute an incremental rotation tensor from the given rotation angles via a
-  quaternion representation of the rotation. This function is equivalent to
-  subroutine vec_to_mat in the Fortran module rotationModule (vpmUtilitiesF90).
+  This method assumes the rotation angles are applied in the order
+  Z, Y and X, i.e., R(z,y,x) = R(x)*R(y)*R(z).
+*/
+
+FaMat33& FaMat33::eulerRotateXYZ (const FaVec3& angles)
+{
+  double cx = cos(angles.x());
+  double cy = cos(angles.y());
+  double cz = cos(angles.z());
+
+  double sx = sin(angles.x());
+  double sy = sin(angles.y());
+  double sz = sin(angles.z());
+
+  THIS(1,1) =  cy*cz;
+  THIS(1,2) = -cy*sz;
+  THIS(1,3) =  sy;
+  THIS(2,1) =  cx*sz + sx*sy*cz;
+  THIS(2,2) =  cx*cz - sx*sy*sz;
+  THIS(2,3) = -sx*cy;
+  THIS(3,1) = -cx*sy*cz + sx*sz;
+  THIS(3,2) =  cx*sy*sz + sx*cz;
+  THIS(3,3) =  cx*cy;
+
+  return *this;
+}
+
+
+/*!
+  This method is supposed to perform the inverse operation of eulerRotateXYZ().
+*/
+
+FaVec3 FaMat33::getEulerXYZ () const
+{
+#ifdef FFA_DEBUG
+  const char* func = "FaMat33::getEulerXYZ";
+#else
+  const char* func = NULL;
+#endif
+  double aX, aY, aZ, R13 = THIS(1,3);
+  if (fabs(R13) < 1.0-EPS_ZERO)
+  {
+    aZ = atan3(-THIS(1,2),THIS(1,1),func);
+    aY = asin(R13);
+    aX = atan3(-THIS(2,3),THIS(3,3),func);
+  }
+  else
+  {
+    aX = 0.0;
+    aY = copysign(0.5*M_PI,R13);
+    aZ = atan3(THIS(2,1),THIS(2,2));
+  }
+
+  return FaVec3(aX,aY,aZ);
+}
+
+
+/*!
+  This method uses a quaternion representation of the rotation, and is
+  equivalent to the Fortran subroutine rotationmodule::vec_to_mat().
+
   The angles provided are those related to a Rodrigues parameterization.
   Rotation axis, with length equal to the angle to rotate about that axis.
 */
 
 FaMat33& FaMat33::incRotate (const FaVec3& angles)
 {
-  const double eps = EPS_ZERO;
-
   double theta = angles.length();
   double quat0 = cos(0.5*theta);
-  FaVec3 quatr = angles * (theta < eps ? 0.5 : sin(0.5*theta)/theta);
+  FaVec3 quatr = angles * (theta < EPS_ZERO ? 0.5 : sin(0.5*theta)/theta);
   double quatl = sqrt(quat0*quat0 + quatr.sqrLength());
   quat0 /= quatl;
   quatr /= quatl;
@@ -385,15 +453,12 @@ FaMat33& FaMat33::incRotate (const FaVec3& angles)
 
 
 /*!
-  Return the rotation angles corresponding to an incremental rotation.
-  This function is equivalent to the Fortran subroutine mat_to_vec
-  in module rotationModule (vpmUtilitiesF90).
+  This method uses a quaternion representation of the rotation, and is
+  equivalent to the Fortran subroutine rotationmodule::mat_to_vec().
 */
 
 FaVec3 FaMat33::getRotation () const
 {
-  const double eps = EPS_ZERO;
-
   int i = 1;
   if (THIS(2,2) > THIS(i,i)) i = 2;
   if (THIS(3,3) > THIS(i,i)) i = 3;
@@ -422,7 +487,7 @@ FaVec3 FaMat33::getRotation () const
   double sthh  = quatr.length() / quatl;
   double cthh  = quat0 / quatl;
   double theta = sthh < 0.7 ? 2.0*asin(sthh) : 2.0*acos(cthh);
-  if (theta < eps)
+  if (theta < EPS_ZERO)
     return quatr * 2.0;
   else if (sthh < 1.0)
     return quatr * theta/sthh;
@@ -431,12 +496,12 @@ FaVec3 FaMat33::getRotation () const
 }
 
 
-FaMat33 FaMat33::makeZrotation (double rot)
+FaMat33 FaMat33::makeZrotation (double angle)
 {
   static FaMat33 r;
 
-  double c = cos(rot);
-  double s = sin(rot);
+  double c = cos(angle);
+  double s = sin(angle);
 
   r(1,1) = c;
   r(2,1) = s;
@@ -446,12 +511,12 @@ FaMat33 FaMat33::makeZrotation (double rot)
   return r;
 }
 
-FaMat33 FaMat33::makeYrotation (double rot)
+FaMat33 FaMat33::makeYrotation (double angle)
 {
   static FaMat33 r;
 
-  double c = cos(rot);
-  double s = sin(rot);
+  double c = cos(angle);
+  double s = sin(angle);
 
   r(1,1) = c;
   r(3,1) = -s;
@@ -461,12 +526,12 @@ FaMat33 FaMat33::makeYrotation (double rot)
   return r;
 }
 
-FaMat33 FaMat33::makeXrotation (double rot)
+FaMat33 FaMat33::makeXrotation (double angle)
 {
   static FaMat33 r;
 
-  double c = cos(rot);
-  double s = sin(rot);
+  double c = cos(angle);
+  double s = sin(angle);
 
   r(2,2) = c;
   r(3,2) = s;
@@ -482,6 +547,7 @@ FaMat33 FaMat33::makeXrotation (double rot)
 // Global operators
 //
 ////////////////////////////////////////////////////////////////////////////////
+//! \cond DO_NOT_DOCUMENT because already documented in the header file
 
 FaMat33 operator- (const FaMat33& a)
 {
@@ -530,8 +596,8 @@ FaMat33 operator/ (const FaMat33& a, double d)
   if (fabs(d) < EPS_ZERO)
   {
 #ifdef FFA_DEBUG
-    std::cerr <<"FaMat33 operator/(FaMat33&,double): Division by zero "<< d
-	      << std::endl;
+    std::cerr <<"  ** FaMat33 operator/(FaMat33&,double): Division by zero ("
+              << d <<")"<< std::endl;
 #endif
     FaVec3 huge_vec(HUGE_VAL, HUGE_VAL, HUGE_VAL);
     return FaMat33(huge_vec, huge_vec, huge_vec);
@@ -541,12 +607,12 @@ FaMat33 operator/ (const FaMat33& a, double d)
 }
 
 
-int operator== (const FaMat33& a, const FaMat33& b)
+bool operator== (const FaMat33& a, const FaMat33& b)
 {
   return (a.v[0] == b.v[0]) && (a.v[1] == b.v[1]) && (a.v[2] == b.v[2]);
 }
 
-int operator!= (const FaMat33& a, const FaMat33& b)
+bool operator!= (const FaMat33& a, const FaMat33& b)
 {
   return !(a == b);
 }
@@ -592,3 +658,5 @@ SUBROUTINE(ffa_glbeulerzyx,FFA_GLBEULERZYX) (double* a, double* angles)
   angles[1] = euler[1];
   angles[2] = euler[2];
 }
+
+//! \endcond
