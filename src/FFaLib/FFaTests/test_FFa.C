@@ -15,7 +15,7 @@
 #include "gtest.h"
 #include "FFaLib/FFaOS/FFaFilePath.H"
 #include "FFaLib/FFaAlgebra/FFaMath.H"
-#include "FFaLib/FFaAlgebra/FFaVec3.H"
+#include "FFaLib/FFaAlgebra/FFaMat33.H"
 #include "FFaLib/FFaAlgebra/FFaCheckSum.H"
 #include "FFaLib/FFaString/FFaStringExt.H"
 #include <array>
@@ -254,14 +254,14 @@ TEST(TestFFa,CheckSum)
   // rounding to the given number of significant digits
   csA.add(A,10);
   csB.add(B,10);
-  std::cout <<"Checksum with 10 signigicant digits "<< csA.getCurrent() << std::endl;
+  std::cout <<"Checksum with 10 significant digits "<< csA.getCurrent() << std::endl;
   ASSERT_EQ(csA.getCurrent(),csB.getCurrent());
   csA.add(A,3);
   csB.add(B,3);
-  std::cout <<"Checksum after 3 signigicant digits "<< csA.getCurrent() << std::endl;
+  std::cout <<"Checksum after 3 significant digits "<< csA.getCurrent() << std::endl;
   csA.add(A,1);
   csB.add(A,1);
-  std::cout <<"Checksum after 1 signigicant digit "<< csA.getCurrent() << std::endl;
+  std::cout <<"Checksum after 1 significant digit "<< csA.getCurrent() << std::endl;
   ASSERT_EQ(csA.getCurrent(),csB.getCurrent());
   // Test old checksum algorithm for doubles, casting to float.
   // This has shown to be a less stable approach.
@@ -273,7 +273,7 @@ TEST(TestFFa,CheckSum)
   B *= 1000.0;
   csA.add(A,10);
   csB.add(B,10);
-  std::cout <<"Checksum with 10 signigicant digits "<< csA.getCurrent() << std::endl;
+  std::cout <<"Checksum with 10 significant digits "<< csA.getCurrent() << std::endl;
   ASSERT_EQ(csA.getCurrent(),csB.getCurrent());
   csA.add(A);
   csB.add(B);
@@ -293,3 +293,57 @@ TEST(TestFFa,String)
   EXPECT_FALSE(FFaString("jalla #FixX").hasSubString(FixDof));
   EXPECT_TRUE(FFaString("peder #FixY").hasSubString(FixDof));
 }
+
+
+//! \brief Class describing a parameterized unit test instance for FaMat33::getEulerZYX().
+class TestFFaEulerZYX : public testing::Test, public testing::WithParamInterface<FaVec3> {};
+
+
+/*!
+  Creates a parameterized test converting Euler angles to rotation matrix and back.
+  GetParam() will be substituted with the actual Euler angle parameters.
+*/
+
+TEST_P(TestFFaEulerZYX, Extract)
+{
+  std::cout <<"\nChecking Euler angles "<< GetParam() << std::endl;
+  FaMat33 eulMat; eulMat.eulerRotateXYZ(GetParam()*M_PI/180.0);
+  FaMat33 rotMat = (FaMat33::makeXrotation(RAD(GetParam().x())) *
+                    FaMat33::makeYrotation(RAD(GetParam().y())) *
+                    FaMat33::makeZrotation(RAD(GetParam().z())));
+  ASSERT_TRUE(rotMat.isCoincident(eulMat));
+  FaVec3 eulerA = rotMat.getEulerXYZ() * 180.0/M_PI;
+  std::cout <<"RotMat(X*Y*Z):"<< rotMat <<"\nEulerXYZ: "<< eulerA << std::endl;
+  /*
+  EXPECT_NEAR(eulerA.x(),GetParam().x(),1.0e-12);
+  EXPECT_NEAR(eulerA.y(),GetParam().y(),1.0e-12);
+  EXPECT_NEAR(eulerA.z(),GetParam().z(),1.0e-12);
+  */
+  eulMat.eulerRotateZYX(GetParam()*M_PI/180.0);
+  rotMat = (FaMat33::makeZrotation(RAD(GetParam().z())) *
+            FaMat33::makeYrotation(RAD(GetParam().y())) *
+            FaMat33::makeXrotation(RAD(GetParam().x())));
+  ASSERT_TRUE(rotMat.isCoincident(eulMat));
+  eulerA = rotMat.getEulerZYX() * 180.0/M_PI;
+  std::cout <<"RotMat(Z*Y*X):"<< rotMat <<"\nEulerZYX: "<< eulerA << std::endl;
+
+  EXPECT_NEAR(eulerA.x(),GetParam().x(),1.0e-12);
+  EXPECT_NEAR(eulerA.y(),GetParam().y(),1.0e-12);
+  EXPECT_NEAR(eulerA.z(),GetParam().z(),1.0e-12);
+}
+
+
+/*!
+  Instantiate the test over some parameters.
+*/
+
+INSTANTIATE_TEST_CASE_P(TestExtract, TestFFaEulerZYX,
+                        testing::Values(FaVec3(),
+                                        FaVec3(10.0, 20.0, 30.0),
+                                        FaVec3(90.0,  0.0,  0.0),
+                                        FaVec3( 0.0, 90.0,  0.0),
+                                        FaVec3( 0.0,  0.0, 90.0),
+                                        FaVec3(90.0, 90.0,  0.0),
+                                        FaVec3(90.0,  0.0,-90.0),
+                                        FaVec3( 0.0, 90.0,-90.0),
+                                        FaVec3(90.0,-90.0, 90.0)));
