@@ -1,0 +1,38 @@
+# SPDX-FileCopyrightText: 2023 SAP SE
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+# This file is part of FEDEM - https://openfedem.org
+
+name: Unit testing
+
+on:
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    name: Build and execute unit tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Install googletest
+        uses: Bacondish2023/setup-googletest@v1
+
+      - name: Check out source code repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          submodules: recursive
+
+      - name: Configure cmake
+        run: >
+          GTEST_ROOT=/usr/local
+          cmake -B ${{ github.workspace }}/build
+          -DCMAKE_BUILD_TYPE=Release
+          -DUSE_FORTRAN=ON -DUSE_MEMPOOL=OFF
+
+      - name: Build binaries and execute tests
+        run: cmake --build ${{ github.workspace }}/build --target check
