@@ -33,9 +33,18 @@ jobs:
         with:
           submodules: recursive
 
+      - name: Configure pFUnit-3
+        run: >
+          PFUNIT=./pFUnit3 cmake
+          -B ./pFUnit3-build -S ./pFUnit/pFUnit-3.3.3
+          -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=./pFUnit3
+
+      - name: Build and install pFUnit-3
+        run: cmake --build ./pFUnit3-build --target install
+
       - name: Configure main build
         run: >
-          GTEST_ROOT=/usr/local
+          GTEST_ROOT=/usr/local PFUNIT=./pFUnit3
           cmake -B ./build -DCMAKE_BUILD_TYPE=Release -DUSE_FORTRAN=ON
 
       - name: Build binaries and execute tests
