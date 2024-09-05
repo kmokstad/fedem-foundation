@@ -194,6 +194,7 @@ public:
   double getMeanElementSize() const;
 
   void getMassProperties(double& M, FaVec3& Xcg, FFaTensor3& I) const;
+  void scaleMatProperties(double scaleStiff, double scaleMass);
 
   NodesCIter findFreeNodeAtPoint(const FaVec3& point, double tol,
                                  int dofFilter = -1) const;

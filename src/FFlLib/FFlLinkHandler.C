@@ -23,6 +23,7 @@
 #include "FFlLib/FFlFEParts/FFlVDetail.H"
 #include "FFlLib/FFlFEParts/FFlVAppearance.H"
 #endif
+#include "FFlLib/FFlFEParts/FFlPMAT.H"
 #include "FFlLib/FFlFEParts/FFlPCOORDSYS.H"
 #include "FFlLib/FFlFEParts/FFlPWAVGM.H"
 #include "FFlLib/FFlFEParts/FFlWAVGM.H"
@@ -1157,9 +1158,9 @@ int FFlLinkHandler::getNewGroupID() const
 
 int FFlLinkHandler::getNewAttribID(const std::string& type) const
 {
-  AttributeTypeCIter ait = myAttributes.find(type);
-  if (ait == myAttributes.end()) return 1;
-  return (--(ait->second.end()))->first + 1;
+  AttributeTypeCIter atit = myAttributes.find(type);
+  if (atit == myAttributes.end()) return 1;
+  return (--(atit->second.end()))->first + 1;
 }
 
 
@@ -1314,19 +1315,18 @@ FFlVDetail* FFlLinkHandler::getOffDetail()
 void FFlLinkHandler::getAllInternalCoordSys(std::vector<FaMat34>& mxes) const
 {
   mxes.clear();
-  AttributeTypeCIter mapit = myAttributes.find("PCOORDSYS");
-  if (mapit == myAttributes.end()) return;
+  AttributeTypeCIter atit = myAttributes.find("PCOORDSYS");
+  if (atit == myAttributes.end()) return;
 
-  FFlPCOORDSYS* lcs;
-  mxes.reserve(mapit->second.size());
-  for (const AttributeMap::value_type& attr : mapit->second)
-    if ((lcs = dynamic_cast<FFlPCOORDSYS*>(attr.second)))
-    {
-      mxes.push_back(FaMat34());
-      mxes.back().makeCS_Z_XZ(lcs->Origo.getValue(),
-			      lcs->Zaxis.getValue(),
-			      lcs->XZpnt.getValue());
-    }
+  mxes.reserve(atit->second.size());
+  for (const AttributeMap::value_type& attr : atit->second)
+  {
+    mxes.push_back(FaMat34());
+    FFlPCOORDSYS* lcs = static_cast<FFlPCOORDSYS*>(attr.second);
+    mxes.back().makeCS_Z_XZ(lcs->Origo.getValue(),
+                            lcs->Zaxis.getValue(),
+                            lcs->XZpnt.getValue());
+  }
 }
 
 
@@ -1986,6 +1986,28 @@ void FFlLinkHandler::getMassProperties(double& M, FaVec3& Xcg,
 
   Xcg = BBcg + Xcg/M;
   I.translateInertia(BBcg-Xcg,-M);
+}
+
+
+/*!
+  All PMAT objects will be multiplied by the provided scaling factors.
+*/
+
+void FFlLinkHandler::scaleMatProperties(double scaleStiff, double scaleMass)
+{
+  AttributeTypeCIter atit = myAttributes.find("PMAT");
+  if (atit == myAttributes.end()) return;
+
+  for (const AttributeMap::value_type& att : atit->second)
+  {
+    FFlPMAT* mat = static_cast<FFlPMAT*>(att.second);
+
+    if (fabs(scaleStiff-1.0) > 1.0e-8)
+      mat->youngsModule.data() *= scaleStiff;
+
+    if (fabs(scaleMass-1.0) > 1.0e-8)
+      mat->materialDensity.data() *= scaleMass;
+  }
 }
 
 
