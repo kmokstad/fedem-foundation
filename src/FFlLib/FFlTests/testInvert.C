@@ -18,6 +18,10 @@
 #include "FFaLib/FFaAlgebra/FFaVec3.H"
 #include <array>
 
+#ifdef FT_KERNEL
+using namespace FTK;
+#endif
+
 
 /*!
   \brief This class creates a shell FE model with some random geometry.

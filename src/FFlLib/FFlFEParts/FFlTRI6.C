@@ -37,7 +37,7 @@ void FFlTRI6::init()
 }
 
 
-bool FFlTRI6::split(Elements& newElem, FFlLinkHandler* owner, int)
+bool FFlTRI6::split(Elements& newElem, FFlPartHandler* owner, int)
 {
   newElem.clear();
   newElem.reserve(4);

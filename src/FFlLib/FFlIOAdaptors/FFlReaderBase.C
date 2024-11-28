@@ -8,7 +8,11 @@
 #include <cstring>
 #include <fstream>
 
-#include "FFlReaderBase.H"
+#include "FFlLib/FFlIOAdaptors/FFlReaderBase.H"
+
+#ifdef FT_KERNEL
+namespace FTK {
+#endif
 
 
 /*!
@@ -44,3 +48,7 @@ int FFlReaderBase::searchKeyword(const char* fileName,
 
   return 0;
 }
+
+#ifdef FT_KERNEL
+} // namespace FTK
+#endif

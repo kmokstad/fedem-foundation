@@ -15,7 +15,7 @@
 #include "FFaLib/FFaDefinitions/FFaMsg.H"
 
 
-bool FFl::convertMPCsToWAVGM (FFlLinkHandler* part, const FFl::MPCMap& mpcs)
+bool FFl::convertMPCsToWAVGM (FFlPartHandler* part, const FFl::MPCMap& mpcs)
 {
   using Doubles       = std::vector<double>;
   using DoublesMap    = std::map<int,Doubles>;
@@ -111,7 +111,7 @@ bool FFl::convertMPCsToWAVGM (FFlLinkHandler* part, const FFl::MPCMap& mpcs)
 }
 
 
-bool FFl::activateElmGroups (FFlLinkHandler* part, const std::string& elmGroups)
+bool FFl::activateElmGroups (FFlPartHandler* part, const std::string& elmGroups)
 {
   using Property = std::pair<std::string,int>;
 
@@ -159,7 +159,7 @@ bool FFl::activateElmGroups (FFlLinkHandler* part, const std::string& elmGroups)
 }
 
 
-bool FFl::extractBodyFromShell (FFlLinkHandler* part, const FaMat34& partCS,
+bool FFl::extractBodyFromShell (FFlPartHandler* part, const FaMat34& partCS,
                                 const std::string& fname)
 {
   using NodeMap = std::map<FFlNode*,size_t,FFlFEPartBaseLess>;

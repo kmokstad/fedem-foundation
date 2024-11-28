@@ -12,7 +12,8 @@
 #include <vector>
 #include <map>
 
-class FFlLinkHandler;
+#include "FFlLib/FFlPartHandler.H"
+
 class FaMat34;
 
 
@@ -30,12 +31,12 @@ namespace FFl
   using MPC     = std::map<short int,DepDOFs>;
   using MPCMap  = std::map<int,MPC>;
 
-  bool convertMPCsToWAVGM(FFlLinkHandler* part, const MPCMap& mpcs);
+  bool convertMPCsToWAVGM(FFlPartHandler* part, const MPCMap& mpcs);
 
-  bool activateElmGroups(FFlLinkHandler* part,
+  bool activateElmGroups(FFlPartHandler* part,
                          const std::string& elmGroups = "");
 
-  bool extractBodyFromShell(FFlLinkHandler* part,
+  bool extractBodyFromShell(FFlPartHandler* part,
                             const FaMat34& partCS, const std::string& fname);
 }
 

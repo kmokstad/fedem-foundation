@@ -37,7 +37,7 @@ void FFlQUAD8::init()
 }
 
 
-bool FFlQUAD8::split(Elements& newElem, FFlLinkHandler* owner, int centerNode)
+bool FFlQUAD8::split(Elements& newElem, FFlPartHandler* owner, int centerNode)
 {
   newElem.clear();
   newElem.reserve(4);

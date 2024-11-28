@@ -42,7 +42,7 @@ void FFlBEAM3::init()
 }
 
 
-bool FFlBEAM3::split(Elements& newElem, FFlLinkHandler* owner, int)
+bool FFlBEAM3::split(Elements& newElem, FFlPartHandler* owner, int)
 {
   newElem.clear();
   newElem.reserve(2);

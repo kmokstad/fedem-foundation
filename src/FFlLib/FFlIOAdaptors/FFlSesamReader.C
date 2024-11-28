@@ -38,6 +38,10 @@
 #define CREATE_ATTRIBUTE(type,name,id) \
   dynamic_cast<type*>(AttributeFactory::instance()->create(name,id));
 
+#ifdef FT_KERNEL
+namespace FTK {
+#endif
+
 
 FFlSesamReader::FFlSesamReader(FFlLinkHandler* aLink) : FFlReaderBase(aLink)
 {
@@ -1148,3 +1152,7 @@ const std::string& FFlSesamReader::findName (const Records& names, int ID)
   static std::string empty;
   return empty;
 }
+
+#ifdef FT_KERNEL
+} // namespace FTK
+#endif

@@ -41,6 +41,10 @@
 #include "FFaLib/FFaProfiler/FFaProfiler.H"
 #endif
 
+#ifdef FT_KERNEL
+namespace FTK {
+#endif
+
 
 FFlLinkHandler::FFlLinkHandler(size_t maxNodes, size_t maxElms)
 {
@@ -2332,3 +2336,7 @@ int FFlLinkHandler::splitElement(FFlElementBase* elm)
 
   return newElems.size();
 }
+
+#ifdef FT_KERNEL
+} // namespace FTK
+#endif

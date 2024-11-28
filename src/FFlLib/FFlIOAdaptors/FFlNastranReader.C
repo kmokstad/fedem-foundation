@@ -36,6 +36,10 @@
 
 #define MAX_HEADER_LINES 1000
 
+#ifdef FT_KERNEL
+namespace FTK {
+#endif
+
 static std::string mainPath;
 
 static bool identFoundSet = false;
@@ -1161,3 +1165,7 @@ bool FFlNastranReader::extractNameFromComment (std::string& commentLine,
 
   return false;
 }
+
+#ifdef FT_KERNEL
+} // namespace FTK
+#endif
