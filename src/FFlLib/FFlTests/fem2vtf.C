@@ -13,6 +13,10 @@
 #include <cstring>
 #include <cctype>
 
+#ifdef FT_KERNEL
+using namespace FTK;
+#endif
+
 
 /*!
   \brief Simple FEM model to VTF conversion utility.

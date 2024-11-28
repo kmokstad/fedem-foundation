@@ -29,6 +29,10 @@ class VTFAFile{};
 #define STOPP_TIMER(function)
 #endif
 
+#ifdef FT_KERNEL
+namespace FTK {
+#endif
+
 
 // Mapping from Fedem node order to VTF order for the second order elements
 
@@ -550,3 +554,7 @@ bool FFlVTFWriter::showError(const char* msg, int ID)
   STOPP_TIMER("write");
   return false;
 }
+
+#ifdef FT_KERNEL
+} // namespace FTK
+#endif

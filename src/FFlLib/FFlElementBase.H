@@ -14,10 +14,10 @@
 #ifdef FT_USE_VISUALS
 #include "FFlLib/FFlVisualRefs.H"
 #endif
+#include "FFlLib/FFlPartHandler.H"
 #include "FFlLib/FFlTypeInfoSpec.H"
 #include "FFaLib/FFaPatterns/FFaGenericFactory.H"
 
-class FFlLinkHandler;
 class FFlFEResultBase;
 class FFlFEElmResult;
 class FFaCheckSum;
@@ -63,7 +63,7 @@ public:
   //! \brief Checks that the element have positive volume, try to fix it if not.
   virtual int checkOrientation(bool = false) { return 1; }
   //! \brief Splits a parabolic element into linear elements.
-  virtual bool split(Elements&, FFlLinkHandler*, int = 0) { return false; }
+  virtual bool split(Elements&, FFlPartHandler*, int = 0) { return false; }
 
   // Structural properties:
   virtual double getMassDensity() const;

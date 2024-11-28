@@ -36,7 +36,7 @@ public:
                                    FFaTensor3& inertia) const;
 
   //! \brief Splits the 3-noded beam element into two 2-noded elements.
-  virtual bool split(Elements& newElm, FFlLinkHandler* owner, int);
+  virtual bool split(Elements& newElm, FFlPartHandler* owner, int);
 
 #ifdef FT_USE_MEMPOOL
   FFA_MAKE_MEMPOOL;

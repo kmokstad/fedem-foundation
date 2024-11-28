@@ -10,8 +10,13 @@
 
 #include <cstddef>
 
-class FFlLinkHandler;
 class FFaProfiler;
+
+#ifdef FT_KERNEL
+namespace FTK {
+#endif
+
+class FFlLinkHandler;
 
 
 class FFlWriterBase
@@ -25,4 +30,7 @@ protected:
   FFaProfiler*          myProfiler;
 };
 
+#ifdef FT_KERNEL
+} // namespace FTK
+#endif
 #endif

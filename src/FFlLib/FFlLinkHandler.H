@@ -73,6 +73,10 @@ typedef std::pair<FFlElementBase*,int> FFlrElement;
 typedef std::vector<FFlrElement>       FFlrElementVec;
 typedef std::vector<FFlrElementVec>    FFlrVxToElmMap;
 
+#ifdef FT_KERNEL
+namespace FTK {
+#endif
+
 
 class FFlLinkHandler
 {
@@ -348,4 +352,7 @@ protected:
   FFaProfiler*          myProfiler;
 };
 
+#ifdef FT_KERNEL
+} // namespace FTK
+#endif
 #endif

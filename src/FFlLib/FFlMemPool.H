@@ -8,15 +8,15 @@
 #ifndef FFL_MEM_POOL_H
 #define FFL_MEM_POOL_H
 
-class FFlLinkHandler;
+#include "FFlLib/FFlPartHandler.H"
 
 
 namespace FFlMemPool
 {
   void deleteAllLinkMemPools();
   void deleteVisualsMemPools();
-  void setAsMemPoolPart(FFlLinkHandler*);
-  void freeMemPoolPart(FFlLinkHandler*);
+  void setAsMemPoolPart(FFlPartHandler*);
+  void freeMemPoolPart(FFlPartHandler*);
   void resetMemPoolPart();
 }
 

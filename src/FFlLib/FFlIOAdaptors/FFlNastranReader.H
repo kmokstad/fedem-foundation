@@ -26,6 +26,10 @@ class FFlLoadBase;
 class FFlGroup;
 class FFaCheckSum;
 
+#ifdef FT_KERNEL
+namespace FTK {
+#endif
+
 
 class FFlNastranReader : public FFlReaderBase
 {
@@ -276,4 +280,7 @@ protected:
   DEF_PROCESSOR( SPC1   ) // Single-point constraints, alternate form
 };
 
+#ifdef FT_KERNEL
+} // namespace FTK
+#endif
 #endif

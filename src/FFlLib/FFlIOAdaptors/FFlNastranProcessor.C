@@ -67,6 +67,10 @@
 #define CREATE_ATTRIBUTE(type,name,id) \
   dynamic_cast<type*>(AttributeFactory::instance()->create(name,id))
 
+#ifdef FT_KERNEL
+namespace FTK {
+#endif
+
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -3959,3 +3963,7 @@ bool FFlNastranReader::insertBeamPropMat (const char* bulk, int PID, int MID)
 
   return true;
 }
+
+#ifdef FT_KERNEL
+} // namespace FTK
+#endif

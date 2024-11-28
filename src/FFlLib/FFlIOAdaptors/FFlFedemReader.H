@@ -8,11 +8,16 @@
 #ifndef FFL_FEDEM_READER_H
 #define FFL_FEDEM_READER_H
 
-#include "FFlReaderBase.H"
-#include "FFaLib/FFaDynCalls/FFaDynCB.H"
 #include <string>
 #include <vector>
 #include <map>
+
+#include "FFaLib/FFaDynCalls/FFaDynCB.H"
+#include "FFlLib/FFlIOAdaptors/FFlReaderBase.H"
+
+#ifdef FT_KERNEL
+namespace FTK {
+#endif
 
 
 class FFlFedemReader : public FFlReaderBase
@@ -69,4 +74,7 @@ private:
   mutable unsigned int linkChecksum;
 };
 
+#ifdef FT_KERNEL
+} // namespace FTK
+#endif
 #endif

@@ -32,7 +32,7 @@ public:
   FFL_TYPE_INFO(FFlTRI6);
 
   //! \brief Splits the 6-noded shell element into four 3-noded elements.
-  virtual bool split(Elements& newElm, FFlLinkHandler* owner, int);
+  virtual bool split(Elements& newElm, FFlPartHandler* owner, int);
 
   virtual FaMat33 getGlobalizedElmCS() const;
   virtual bool getFaceNormals(std::vector<FaVec3>& normals, short int face = 1,

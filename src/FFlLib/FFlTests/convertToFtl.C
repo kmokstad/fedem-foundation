@@ -16,6 +16,10 @@
 #include <fstream>
 #include <cstring>
 
+#ifdef FT_KERNEL
+using namespace FTK;
+#endif
+
 
 /*!
   \brief Converter program from vrml or ftc to ftl.
