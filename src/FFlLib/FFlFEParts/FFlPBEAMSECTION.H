@@ -15,6 +15,10 @@
 
 #include "FFaLib/FFaPatterns/FFaSingelton.H"
 
+#ifdef FT_KERNEL
+namespace FTK {
+#endif
+
 
 class FFlPBEAMSECTION : public FFlAttributeBase
 {
@@ -46,8 +50,7 @@ private:
   void setupFields();
 };
 
-
-typedef FFaSingelton<FFlTypeInfoSpec,FFlPBEAMSECTION>    FFlPBEAMSECTIONTypeInfoSpec;
-typedef FFaSingelton<FFlFEAttributeSpec,FFlPBEAMSECTION> FFlPBEAMSECTIONAttributeSpec;
-
+#ifdef FT_KERNEL
+} // namespace FTK
+#endif
 #endif

@@ -5,8 +5,12 @@
 // This file is part of FEDEM - https://openfedem.org
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "FFlAllIOAdaptors.H"
-#include "FFlReaders.H"
+#include "FFlLib/FFlIOAdaptors/FFlAllIOAdaptors.H"
+#include "FFlLib/FFlIOAdaptors/FFlReaders.H"
+
+#ifdef FT_KERNEL
+using namespace FTK;
+#endif
 
 //! Set to \e true when initialized, to avoid initializing more than once.
 static bool initialized = false;

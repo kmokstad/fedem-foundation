@@ -15,7 +15,10 @@
 #ifdef FT_USE_MEMPOOL
 #include "FFaLib/FFaPatterns/FFaMemPool.H"
 #endif
-#include "FFaLib/FFaPatterns/FFaSingelton.H"
+
+#ifdef FT_KERNEL
+namespace FTK {
+#endif
 
 
 class FFlCMASS : public FFlElementBase
@@ -43,8 +46,7 @@ private:
 #endif
 };
 
-typedef FFaSingelton<FFlFEAttributeSpec,FFlCMASS>  FFlCMASSAttributeSpec;
-typedef FFaSingelton<FFlFEElementTopSpec,FFlCMASS> FFlCMASSElementTopSpec;
-typedef FFaSingelton<FFlTypeInfoSpec,FFlCMASS>     FFlCMASSTypeInfoSpec;
-
+#ifdef FT_KERNEL
+} // namespace FTK
+#endif
 #endif

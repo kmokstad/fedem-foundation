@@ -15,6 +15,10 @@
 
 #include "FFaLib/FFaPatterns/FFaSingelton.H"
 
+#ifdef FT_KERNEL
+namespace FTK {
+#endif
+
 
 class FFlPHEIGHT : public FFlAttributeBase
 {		
@@ -34,7 +38,7 @@ public:
   FFlField<double> height;
 };
 
-typedef FFaSingelton<FFlTypeInfoSpec,FFlPHEIGHT>    FFlPHEIGHTTypeInfoSpec;
-typedef FFaSingelton<FFlFEAttributeSpec,FFlPHEIGHT> FFlPHEIGHTAttributeSpec;
-
+#ifdef FT_KERNEL
+} // namespace FTK
+#endif
 #endif

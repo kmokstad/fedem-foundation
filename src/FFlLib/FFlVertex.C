@@ -7,6 +7,10 @@
 
 #include "FFlLib/FFlVertex.H"
 
+#ifdef FT_KERNEL
+namespace FTK {
+#endif
+
 
 FFlVertex::FFlVertex(double x, double y, double z) : FaVec3(x,y,z)
 {
@@ -38,3 +42,7 @@ short int FFlVertex::unRef()
   delete this;
   return 0;
 }
+
+#ifdef FT_KERNEL
+} // namespace FTK
+#endif

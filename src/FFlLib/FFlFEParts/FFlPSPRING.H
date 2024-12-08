@@ -17,6 +17,10 @@
 
 #include <array>
 
+#ifdef FT_KERNEL
+namespace FTK {
+#endif
+
 
 class FFlPSPRING : public FFlAttributeBase
 {
@@ -40,8 +44,7 @@ public:
   FFlField<int> type; //!< Needed to determine correct unit conversion
 };
 
-
-typedef FFaSingelton<FFlTypeInfoSpec,FFlPSPRING>    FFlPSPRINGTypeInfoSpec;
-typedef FFaSingelton<FFlFEAttributeSpec,FFlPSPRING> FFlPSPRINGAttributeSpec;
-
+#ifdef FT_KERNEL
+} // namespace FTK
+#endif
 #endif

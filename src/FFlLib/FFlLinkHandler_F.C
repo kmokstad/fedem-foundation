@@ -38,6 +38,10 @@
 #include "FFaLib/FFaOS/FFaFortran.H"
 #include "FFaLib/FFaOS/FFaExport.H"
 
+#ifdef FT_KERNEL
+using namespace FTK;
+#endif
+
 //! \brief Pointers to all FE parts subjected to recovery during dynamics solve
 static std::vector<FFlLinkHandler*> ourLinks;
 //! \brief Pointer to FE part currently in calculation focus

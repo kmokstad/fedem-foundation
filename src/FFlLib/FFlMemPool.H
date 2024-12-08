@@ -8,15 +8,24 @@
 #ifndef FFL_MEM_POOL_H
 #define FFL_MEM_POOL_H
 
+#ifdef FT_KERNEL
+namespace FTK { class FFlLinkHandler; }
+#else
 class FFlLinkHandler;
+#endif
 
 
 namespace FFlMemPool
 {
+#ifdef FT_KERNEL
+  using PartHandler = FTK::FFlLinkHandler;
+#else
+  using PartHandler = FFlLinkHandler;
+#endif
   void deleteAllLinkMemPools();
   void deleteVisualsMemPools();
-  void setAsMemPoolPart(FFlLinkHandler*);
-  void freeMemPoolPart(FFlLinkHandler*);
+  void setAsMemPoolPart(PartHandler*);
+  void freeMemPoolPart(PartHandler*);
   void resetMemPoolPart();
 }
 

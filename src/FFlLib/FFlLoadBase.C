@@ -10,6 +10,10 @@
 #include "FFlLib/FFlTypeInfoSpec.H"
 #include "FFaLib/FFaAlgebra/FFaCheckSum.H"
 
+#ifdef FT_KERNEL
+namespace FTK {
+#endif
+
 
 const std::string& FFlLoadBase::getTypeName() const
 {
@@ -24,3 +28,7 @@ void FFlLoadBase::calculateChecksum(FFaCheckSum* cs, int csMask) const
   for (FFlFieldBase* field : myFields)
     field->calculateChecksum(cs);
 }
+
+#ifdef FT_KERNEL
+} // namespace FTK
+#endif

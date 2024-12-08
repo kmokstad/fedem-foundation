@@ -17,6 +17,10 @@
 
 #include <array>
 
+#ifdef FT_KERNEL
+namespace FTK {
+#endif
+
 
 class FFlPBUSHCOEFF : public FFlAttributeBase
 {
@@ -36,8 +40,7 @@ public:
   std::array<FFlField<double>,6> K; //!< Diagonal 6x6 matrix
 };
 
-
-typedef FFaSingelton<FFlTypeInfoSpec,FFlPBUSHCOEFF>    FFlPBUSHCOEFFTypeInfoSpec;
-typedef FFaSingelton<FFlFEAttributeSpec,FFlPBUSHCOEFF> FFlPBUSHCOEFFAttributeSpec;
-
+#ifdef FT_KERNEL
+} // namespace FTK
+#endif
 #endif

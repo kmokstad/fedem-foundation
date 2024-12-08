@@ -11,6 +11,10 @@
 #include "FFlLib/FFlLinkCSMask.H"
 #include "FFaLib/FFaDefinitions/FFaMsg.H"
 
+#ifdef FT_KERNEL
+namespace FTK {
+#endif
+
 
 void FFlVisualRefs::useVisualsFrom(const FFlVisualRefs* obj)
 {
@@ -111,3 +115,7 @@ void FFlVisualRefs::checksum(FFaCheckSum* cs, int cstype) const
   if (myApp.getID())    cs->add(myApp.getID());
   if (myDetail.getID()) cs->add(myDetail.getID());
 }
+
+#ifdef FT_KERNEL
+} // namespace FTK
+#endif

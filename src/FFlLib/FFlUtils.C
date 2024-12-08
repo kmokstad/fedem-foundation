@@ -14,6 +14,10 @@
 #include "FFaLib/FFaString/FFaTokenizer.H"
 #include "FFaLib/FFaDefinitions/FFaMsg.H"
 
+#ifdef FT_KERNEL
+using namespace FTK;
+#endif
+
 
 bool FFl::convertMPCsToWAVGM (FFlLinkHandler* part, const FFl::MPCMap& mpcs)
 {

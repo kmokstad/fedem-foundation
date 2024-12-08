@@ -13,6 +13,10 @@
 #include "FFaLib/FFaPatterns/FFaMemPool.H"
 #endif
 
+#ifdef FT_KERNEL
+namespace FTK {
+#endif
+
 class FFlNode;
 
 
@@ -48,4 +52,7 @@ protected:
 #endif
 };
 
+#ifdef FT_KERNEL
+} // namespace FTK
+#endif
 #endif

@@ -15,6 +15,10 @@
 
 #include "FFaLib/FFaPatterns/FFaSingelton.H"
 
+#ifdef FT_KERNEL
+namespace FTK {
+#endif
+
 
 class FFlPTHICK : public FFlAttributeBase
 {		
@@ -34,8 +38,7 @@ public:
   FFlField<double> thickness;
 };
 
-
-typedef FFaSingelton<FFlTypeInfoSpec,FFlPTHICK>    FFlPTHICKTypeInfoSpec;
-typedef FFaSingelton<FFlFEAttributeSpec,FFlPTHICK> FFlPTHICKAttributeSpec;
-
+#ifdef FT_KERNEL
+} // namespace FTK
+#endif
 #endif

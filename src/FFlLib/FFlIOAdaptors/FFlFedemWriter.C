@@ -44,6 +44,10 @@
   \endcode
 */
 
+#ifdef FT_KERNEL
+namespace FTK {
+#endif
+
 
 bool FFlFedemWriter::write(const std::string& filename,
 			   bool writeExtNodes, bool writeChecksum,
@@ -267,4 +271,8 @@ bool FFlFedemWriter::writeVisualData(std::ostream& os) const
 }
 #else
 bool FFlFedemWriter::writeVisualData(std::ostream&) const { return true; }
+#endif
+
+#ifdef FT_KERNEL
+} // namespace FTK
 #endif

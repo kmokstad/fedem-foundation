@@ -16,6 +16,10 @@
 #include "FFaLib/FFaAlgebra/FFaVec3.H"
 #include "FFaLib/FFaPatterns/FFaSingelton.H"
 
+#ifdef FT_KERNEL
+namespace FTK {
+#endif
+
 
 class FFlPCOORDSYS : public FFlAttributeBase
 {		
@@ -37,8 +41,7 @@ public:
   FFlField<FaVec3> XZpnt;
 };
 
-
-typedef FFaSingelton<FFlTypeInfoSpec,FFlPCOORDSYS>    FFlPCOORDSYSTypeInfoSpec;
-typedef FFaSingelton<FFlFEAttributeSpec,FFlPCOORDSYS> FFlPCOORDSYSAttributeSpec;
-
+#ifdef FT_KERNEL
+} // namespace FTK
+#endif
 #endif

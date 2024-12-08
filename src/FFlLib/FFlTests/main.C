@@ -17,6 +17,10 @@
 #include <iterator>
 #include <cstring>
 
+#ifdef FT_KERNEL
+using namespace FTK;
+#endif
+
 int convertToFtl(const char* fname);
 
 

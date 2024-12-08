@@ -8,20 +8,26 @@
 #ifndef FFL_FE_ATTRIBUTE_REFS_H
 #define FFL_FE_ATTRIBUTE_REFS_H
 
-#include "FFlReference.H"
+#include "FFlLib/FFlReference.H"
 #include <vector>
 #include <string>
 #include <map>
 
-class FFlAttributeBase;
-class FFlFEAttributeSpec;
 class FFaCheckSum;
+class FFlFEAttributeSpec;
 
-typedef FFlReference<FFlAttributeBase>     AttribRef;
-typedef std::pair<unsigned char,AttribRef> AttribData;
-typedef std::vector<AttribData>            AttribsVec;
-typedef AttribsVec::const_iterator         AttribsCIter;
-typedef std::map<int,FFlAttributeBase*>    AttributeMap;
+#ifdef FT_KERNEL
+namespace FTK {
+#endif
+
+class FFlAttributeBase;
+
+using AttribRef    = FFlReference<FFlAttributeBase>;
+using AttribData   = std::pair<unsigned char,AttribRef>;
+using AttribsVec   = std::vector<AttribData>;
+using AttribsCIter = AttribsVec::const_iterator;
+using AttributeMap = std::map<int,FFlAttributeBase*>;
+using AttribTypMap = std::map<std::string,AttributeMap>;
 
 
 class FFlFEAttributeRefs
@@ -43,8 +49,7 @@ public:
   bool setAttribute(const std::string& type, int ID);
   bool clearAttribute(const std::string& type);
 
-  bool resolve(const std::map<std::string,AttributeMap>& possibleReferences,
-	       bool suppressErrmsg = false);
+  bool resolve(const AttribTypMap& possibleRefs, bool suppressErrmsg = false);
 
   virtual FFlFEAttributeSpec* getFEAttributeSpec() const = 0;
 
@@ -87,4 +92,7 @@ private:
   { return k1 < k2; }
 };
 
+#ifdef FT_KERNEL
+} // namespace FTK
+#endif
 #endif

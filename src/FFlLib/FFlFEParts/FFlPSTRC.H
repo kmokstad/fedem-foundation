@@ -13,7 +13,9 @@
 #include "FFlLib/FFlTypeInfoSpec.H"
 #include "FFlLib/FFlField.H"
 
-#include "FFaLib/FFaPatterns/FFaSingelton.H"
+#ifdef FT_KERNEL
+namespace FTK {
+#endif
 
 
 class FFlPSTRC : public FFlAttributeBase
@@ -32,8 +34,7 @@ public:
   FFlField<std::string> name;
 };
 
-
-typedef FFaSingelton<FFlTypeInfoSpec,FFlPSTRC>    FFlPSTRCTypeInfoSpec;
-typedef FFaSingelton<FFlFEAttributeSpec,FFlPSTRC> FFlPSTRCAttributeSpec;
-
+#ifdef FT_KERNEL
+} // namespace FTK
+#endif
 #endif
