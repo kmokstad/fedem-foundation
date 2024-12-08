@@ -17,7 +17,6 @@
 #include "FFlLib/FFlFEParts/FFlPSPRING.H"
 #include "FFlLib/FFlFEParts/FFlPMASS.H"
 #include "FFlLib/FFlFEParts/FFlPMAT.H"
-#include "FFlLib/FFlFEParts/FFlPMATSHELL.H"
 #include "FFlLib/FFlFEParts/FFlPEFFLENGTH.H"
 #include "FFlLib/FFlFEParts/FFlCLOAD.H"
 
