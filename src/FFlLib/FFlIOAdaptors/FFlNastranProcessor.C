@@ -16,7 +16,7 @@
 #include "FFlLib/FFlFEParts/FFlPBEAMECCENT.H"
 #include "FFlLib/FFlFEParts/FFlPBEAMPIN.H"
 #include "FFlLib/FFlFEParts/FFlPTHICK.H"
-#include "FFlLib/FFlFEParts/FFlPCOMP.H"
+//#include "FFlLib/FFlFEParts/FFlPCOMP.H"
 #include "FFlLib/FFlFEParts/FFlPMASS.H"
 #include "FFlLib/FFlFEParts/FFlPMAT.H"
 #include "FFlLib/FFlFEParts/FFlPNSM.H"
@@ -2455,6 +2455,7 @@ bool FFlNastranReader::process_MAT9 (std::vector<std::string>& entry)
 
 bool FFlNastranReader::process_PCOMP (std::vector<std::string>& entry)
 {
+  return false; /* currently disabled
   START_TIMER("process_PCOMP")
 
   int    PID = 0;
@@ -2504,6 +2505,7 @@ bool FFlNastranReader::process_PCOMP (std::vector<std::string>& entry)
 
   STOPP_TIMER("process_PCOMP")
   return true;
+*/
 }
 
 

@@ -804,17 +804,20 @@ SUBROUTINE (ffl_attribute,FFL_ATTRIBUTE) (const char* type,
 INTEGER_FUNCTION(ffl_getmaxcompositeplys,FFL_GETMAXCOMPOSITEPLYS) ()
 {
   int maxPlys = -1;
+  /* currently disabled
   if (ourLink)
     for (const AttributeMap::value_type& p : ourLink->getAttributes("PCOMP"))
     {
       int nPlys = static_cast<FFlPCOMP*>(p.second)->plySet.data().size();
       if (nPlys > maxPlys) maxPlys = nPlys;
     }
+  */
   return maxPlys;
 }
 
 INTEGER_FUNCTION(ffl_getpcompnumplys,FFL_GETPCOMPNUMPLYS) (const int& compID)
 {
+  return 0; /* currently disabled
   FFlPCOMP* curComp = LINK_ATTRIBUTE(PCOMP,compID);
   if (!curComp)
   {
@@ -823,6 +826,7 @@ INTEGER_FUNCTION(ffl_getpcompnumplys,FFL_GETPCOMPNUMPLYS) (const int& compID)
   }
 
   return curComp->plySet.data().size();
+  */
 }
 
 SUBROUTINE(ffl_getpcomp,FFL_GETPCOMP) (int& compID, int& nPlys, double& Z0,
@@ -833,6 +837,7 @@ SUBROUTINE(ffl_getpcomp,FFL_GETPCOMP) (int& compID, int& nPlys, double& Z0,
 {
   ierr = -1;
   if (!ourLink) return;
+  /* currently disabled
   const AttributeMap& pComps = ourLink->getAttributes("PCOMP");
   if (pComps.empty()) return;
 
@@ -886,6 +891,7 @@ SUBROUTINE(ffl_getpcomp,FFL_GETPCOMP) (int& compID, int& nPlys, double& Z0,
     theta[i] = ply.thetaInDeg;
     T[i++]   = ply.T;
   }
+  */
 }
 
 

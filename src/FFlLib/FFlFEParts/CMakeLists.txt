@@ -17,7 +17,7 @@ set ( COMPONENT_FILE_LIST FFlAllFEParts FFlBeams FFlBUSH
                           FFlCLOAD FFlCMASS FFlCurvedFace
                           FFlNode FFlPBEAMECCENT FFlPBEAMPIN
                           FFlPBEAMSECTION FFlPBUSHCOEFF FFlPBUSHECCENT
-                          FFlPCOMP FFlPCOORDSYS FFlPEFFLENGTH
+                          FFlPCOORDSYS FFlPEFFLENGTH
                           FFlPLOAD FFlPMASS FFlPMAT FFlPNSM
                           FFlPORIENT FFlPRBAR FFlPRGD FFlPSPRING
                           FFlPTHICK FFlPWAVGM

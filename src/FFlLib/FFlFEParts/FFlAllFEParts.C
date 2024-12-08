@@ -62,7 +62,7 @@ void FFl::initAllElements()
   FFlPEFFLENGTH::init();
   FFlPSPRING::init();
   FFlPTHICK::init();
-  FFlPCOMP::init();
+  //FFlPCOMP::init();
   FFlPNSM::init();
   FFlPRGD::init();
   FFlPWAVGM::init();
@@ -153,7 +153,7 @@ void FFl::releaseAllElements()
   releaseAttribute<FFlPEFFLENGTH>();
   releaseAttribute<FFlPSPRING>();
   releaseAttribute<FFlPTHICK>();
-  releaseAttribute<FFlPCOMP>();
+  //releaseAttribute<FFlPCOMP>();
   releaseAttribute<FFlPNSM>();
   releaseAttribute<FFlPRGD>();
   releaseAttribute<FFlPWAVGM>();

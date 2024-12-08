@@ -32,7 +32,7 @@
 #include "FFlPEFFLENGTH.H"
 #include "FFlPSPRING.H"
 #include "FFlPTHICK.H"
-#include "FFlPCOMP.H"
+//#include "FFlPCOMP.H"
 #include "FFlPNSM.H"
 #include "FFlPRGD.H"
 #include "FFlPWAVGM.H"
