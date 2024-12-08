@@ -5,8 +5,12 @@
 // This file is part of FEDEM - https://openfedem.org
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "FFlPTHICK.H"
+#include "FFlLib/FFlFEParts/FFlPTHICK.H"
 #include "FFaLib/FFaAlgebra/FFaUnitCalculator.H"
+
+#ifdef FT_KERNEL
+namespace FTK {
+#endif
 
 
 FFlPTHICK::FFlPTHICK(int id) : FFlAttributeBase(id)
@@ -40,3 +44,7 @@ void FFlPTHICK::init()
     (FFlPTHICKTypeInfoSpec::instance()->getTypeName(),
      FFaDynCB2S(FFlPTHICK::create,int,FFlAttributeBase*&));
 }
+
+#ifdef FT_KERNEL
+} // namespace FTK
+#endif

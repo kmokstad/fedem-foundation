@@ -8,6 +8,10 @@
 #include "FFlLib/FFlFEParts/FFlPBUSHECCENT.H"
 #include "FFaLib/FFaAlgebra/FFaUnitCalculator.H"
 
+#ifdef FT_KERNEL
+namespace FTK {
+#endif
+
 
 FFlPBUSHECCENT::FFlPBUSHECCENT(int id) : FFlAttributeBase(id)
 {
@@ -39,3 +43,7 @@ void FFlPBUSHECCENT::init()
     (FFlPBUSHECCENTTypeInfoSpec::instance()->getTypeName(),
      FFaDynCB2S(FFlPBUSHECCENT::create,int,FFlAttributeBase*&));
 }
+
+#ifdef FT_KERNEL
+} // namespace FTK
+#endif

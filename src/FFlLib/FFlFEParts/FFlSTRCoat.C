@@ -10,6 +10,10 @@
 #include "FFaLib/FFaAlgebra/FFaMat33.H"
 #include "FFaLib/FFaDefinitions/FFaMsg.H"
 
+#ifdef FT_KERNEL
+namespace FTK {
+#endif
+
 
 void FFlSTRCT3::init()
 {
@@ -153,3 +157,7 @@ FFlElementBase* FFlStrainCoatBase::getFElement() const
   else
     return 0;
 }
+
+#ifdef FT_KERNEL
+} // namespace FTK
+#endif

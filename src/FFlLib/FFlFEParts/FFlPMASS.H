@@ -15,6 +15,10 @@
 
 #include "FFaLib/FFaPatterns/FFaSingelton.H"
 
+#ifdef FT_KERNEL
+namespace FTK {
+#endif
+
 
 class FFlPMASS : public FFlAttributeBase
 {
@@ -39,4 +43,7 @@ public:
 typedef FFaSingelton<FFlTypeInfoSpec,FFlPMASS>    FFlPMASSTypeInfoSpec;
 typedef FFaSingelton<FFlFEAttributeSpec,FFlPMASS> FFlPMASSAttributeSpec;
 
+#ifdef FT_KERNEL
+} // namespace FTK
+#endif
 #endif

@@ -7,6 +7,10 @@
 
 #include "FFlPTHICKREF.H"
 
+#ifdef FT_KERNEL
+namespace FTK {
+#endif
+
 
 FFlPTHICKREF::FFlPTHICKREF(int id) : FFlAttributeBase(id)
 {
@@ -34,3 +38,7 @@ void FFlPTHICKREF::init()
     (FFlPTHICKREFTypeInfoSpec::instance()->getTypeName(),
      FFaDynCB2S(FFlPTHICKREF::create,int,FFlAttributeBase*&));
 }
+
+#ifdef FT_KERNEL
+} // namespace FTK
+#endif

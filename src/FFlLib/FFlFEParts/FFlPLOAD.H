@@ -16,6 +16,10 @@
 
 #include "FFaLib/FFaPatterns/FFaSingelton.H"
 
+#ifdef FT_KERNEL
+namespace FTK {
+#endif
+
 
 class FFlPLOAD : public FFlLoadBase
 {
@@ -113,4 +117,7 @@ typedef FFaSingelton<FFlTypeInfoSpec,FFlFACELOAD> FFlFACELOADTypeInfoSpec;
 typedef FFaSingelton<FFlFEAttributeSpec,FFlSURFLOAD> FFlSURFLOADAttributeSpec;
 typedef FFaSingelton<FFlFEAttributeSpec,FFlFACELOAD> FFlFACELOADAttributeSpec;
 
+#ifdef FT_KERNEL
+} // namespace FTK
+#endif
 #endif

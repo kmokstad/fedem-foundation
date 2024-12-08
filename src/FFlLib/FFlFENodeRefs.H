@@ -8,16 +8,21 @@
 #ifndef FFL_FE_NODE_REFS_H
 #define FFL_FE_NODE_REFS_H
 
-#include "FFlReference.H"
+#include "FFlLib/FFlReference.H"
 
-class FFlFEElementTopSpec;
-class FFlNode;
-class FFaCheckSum;
 class FaVec3;
+class FFaCheckSum;
+class FFlFEElementTopSpec;
 
-typedef FFlReference<FFlNode>    NodeRef;
-typedef std::vector<NodeRef>     NodeVec;
-typedef NodeVec::const_iterator  NodeCIter;
+#ifdef FT_KERNEL
+namespace FTK {
+#endif
+
+class FFlNode;
+
+using NodeRef   = FFlReference<FFlNode>;
+using NodeVec   = std::vector<NodeRef>;
+using NodeCIter = NodeVec::const_iterator;
 
 
 class FFlFENodeRefs
@@ -84,4 +89,7 @@ private:
   mutable double mySize;
 };
 
+#ifdef FT_KERNEL
+} // namespace FTK
+#endif
 #endif

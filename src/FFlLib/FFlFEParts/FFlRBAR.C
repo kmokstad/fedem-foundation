@@ -7,6 +7,10 @@
 
 #include "FFlLib/FFlFEParts/FFlRBAR.H"
 
+#ifdef FT_KERNEL
+namespace FTK {
+#endif
+
 
 void FFlRBAR::init()
 {
@@ -25,3 +29,7 @@ void FFlRBAR::init()
   FFlRBARElementTopSpec::instance()->addExplicitEdge(EdgeType(1,2));
   FFlRBARElementTopSpec::instance()->myExplEdgePattern = 0xf0f0;
 }
+
+#ifdef FT_KERNEL
+} // namespace FTK
+#endif

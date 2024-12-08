@@ -17,6 +17,10 @@
 #endif
 #include "FFaLib/FFaPatterns/FFaSingelton.H"
 
+#ifdef FT_KERNEL
+namespace FTK {
+#endif
+
 
 class FFlBUSH : public FFlElementBase
 {
@@ -43,4 +47,7 @@ typedef FFaSingelton<FFlFEAttributeSpec,FFlBUSH>  FFlBUSHAttributeSpec;
 typedef FFaSingelton<FFlFEElementTopSpec,FFlBUSH> FFlBUSHElementTopSpec;
 typedef FFaSingelton<FFlTypeInfoSpec,FFlBUSH>     FFlBUSHTypeInfoSpec;
 
+#ifdef FT_KERNEL
+} // namespace FTK
+#endif
 #endif

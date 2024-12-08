@@ -8,6 +8,10 @@
 #include "FFlLib/FFlFEParts/FFlBUSH.H"
 #include "FFlLib/FFlFEParts/FFlPBUSHECCENT.H"
 
+#ifdef FT_KERNEL
+namespace FTK {
+#endif
+
 
 void FFlBUSH::init()
 {
@@ -51,3 +55,7 @@ int FFlBUSH::getNodalCoor(double* X, double* Y, double* Z) const
 
   return ierr;
 }
+
+#ifdef FT_KERNEL
+} // namespace FTK
+#endif

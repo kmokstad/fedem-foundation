@@ -8,6 +8,10 @@
 #include "FFlLib/FFlFEParts/FFlPCOORDSYS.H"
 #include "FFaLib/FFaAlgebra/FFaUnitCalculator.H"
 
+#ifdef FT_KERNEL
+namespace FTK {
+#endif
+
 
 FFlPCOORDSYS::FFlPCOORDSYS(int id) : FFlAttributeBase(id)
 {
@@ -51,3 +55,7 @@ void FFlPCOORDSYS::init()
     (FFlPCOORDSYSTypeInfoSpec::instance()->getTypeName(),
      FFaDynCB2S(FFlPCOORDSYS::create,int,FFlAttributeBase*&));
 }
+
+#ifdef FT_KERNEL
+} // namespace FTK
+#endif

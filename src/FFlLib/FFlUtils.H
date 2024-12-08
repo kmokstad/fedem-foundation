@@ -12,12 +12,22 @@
 #include <vector>
 #include <map>
 
+#ifdef FT_KERNEL
+namespace FTK { class FFlLinkHandler; }
+#else
 class FFlLinkHandler;
+#endif
 class FaMat34;
 
 
 namespace FFl
 {
+#ifdef FT_KERNEL
+  using PartHandler = FTK::FFlLinkHandler;
+#else
+  using PartHandler = FFlLinkHandler;
+#endif
+
   struct DepDOF
   {
     int node;
@@ -30,13 +40,12 @@ namespace FFl
   using MPC     = std::map<short int,DepDOFs>;
   using MPCMap  = std::map<int,MPC>;
 
-  bool convertMPCsToWAVGM(FFlLinkHandler* part, const MPCMap& mpcs);
+  bool convertMPCsToWAVGM(PartHandler* part, const MPCMap& mpcs);
 
-  bool activateElmGroups(FFlLinkHandler* part,
-                         const std::string& elmGroups = "");
+  bool activateElmGroups(PartHandler* part, const std::string& elmGroups = "");
 
-  bool extractBodyFromShell(FFlLinkHandler* part,
-                            const FaMat34& partCS, const std::string& fname);
+  bool extractBodyFromShell(PartHandler* part, const FaMat34& partCS,
+                            const std::string& fname);
 }
 
 #endif

@@ -8,6 +8,10 @@
 #include "FFlLib/FFlFEParts/FFlPMASS.H"
 #include "FFaLib/FFaAlgebra/FFaUnitCalculator.H"
 
+#ifdef FT_KERNEL
+namespace FTK {
+#endif
+
 
 FFlPMASS::FFlPMASS(int id) : FFlAttributeBase(id)
 {
@@ -59,3 +63,7 @@ void FFlPMASS::init()
     (FFlPMASSTypeInfoSpec::instance()->getTypeName(),
      FFaDynCB2S(FFlPMASS::create,int,FFlAttributeBase*&));
 }
+
+#ifdef FT_KERNEL
+} // namespace FTK
+#endif

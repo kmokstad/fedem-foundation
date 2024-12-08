@@ -15,6 +15,10 @@
 
 #include "FFaLib/FFaPatterns/FFaSingelton.H"
 
+#ifdef FT_KERNEL
+namespace FTK {
+#endif
+
 
 class FFlPRBAR : public FFlAttributeBase
 {
@@ -41,4 +45,7 @@ public:
 typedef FFaSingelton<FFlTypeInfoSpec,FFlPRBAR>    FFlPRBARTypeInfoSpec;
 typedef FFaSingelton<FFlFEAttributeSpec,FFlPRBAR> FFlPRBARAttributeSpec;
 
+#ifdef FT_KERNEL
+} // namespace FTK
+#endif
 #endif

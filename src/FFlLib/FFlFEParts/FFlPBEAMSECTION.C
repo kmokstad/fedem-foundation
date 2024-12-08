@@ -8,6 +8,10 @@
 #include "FFlLib/FFlFEParts/FFlPBEAMSECTION.H"
 #include "FFaLib/FFaAlgebra/FFaUnitCalculator.H"
 
+#ifdef FT_KERNEL
+namespace FTK {
+#endif
+
 
 FFlPBEAMSECTION::FFlPBEAMSECTION(int id) : FFlAttributeBase(id)
 {
@@ -74,3 +78,7 @@ void FFlPBEAMSECTION::init()
     (FFlPBEAMSECTIONTypeInfoSpec::instance()->getTypeName(),
      FFaDynCB2S(FFlPBEAMSECTION::create,int,FFlAttributeBase*&));
 }
+
+#ifdef FT_KERNEL
+} // namespace FTK
+#endif

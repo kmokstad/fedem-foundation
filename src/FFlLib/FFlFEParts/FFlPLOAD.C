@@ -5,10 +5,14 @@
 // This file is part of FEDEM - https://openfedem.org
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "FFlPLOAD.H"
+#include "FFlLib/FFlFEParts/FFlPLOAD.H"
 #include "FFlLib/FFlFEParts/FFlPORIENT.H"
 #include "FFaLib/FFaAlgebra/FFaUnitCalculator.H"
 #include "FFaLib/FFaDefinitions/FFaMsg.H"
+
+#ifdef FT_KERNEL
+namespace FTK {
+#endif
 
 
 FFlPLOAD::FFlPLOAD(int id) : FFlLoadBase(id)
@@ -303,3 +307,7 @@ void FFlFACELOAD::init()
     (FFlFACELOADTypeInfoSpec::instance()->getTypeName(),
      FFaDynCB2S(FFlFACELOAD::create,int,FFlLoadBase*&));
 }
+
+#ifdef FT_KERNEL
+} // namespace FTK
+#endif

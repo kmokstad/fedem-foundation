@@ -8,6 +8,10 @@
 #include "FFlLib/FFlFEParts/FFlPSPRING.H"
 #include "FFaLib/FFaAlgebra/FFaUnitCalculator.H"
 
+#ifdef FT_KERNEL
+namespace FTK {
+#endif
+
 
 FFlPSPRING::FFlPSPRING(int id) : FFlAttributeBase(id)
 {
@@ -52,3 +56,7 @@ void FFlPSPRING::init()
     (FFlPSPRINGTypeInfoSpec::instance()->getTypeName(),
      FFaDynCB2S(FFlPSPRING::create,int,FFlAttributeBase*&));
 }
+
+#ifdef FT_KERNEL
+} // namespace FTK
+#endif

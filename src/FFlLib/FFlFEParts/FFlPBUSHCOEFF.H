@@ -17,6 +17,10 @@
 
 #include <array>
 
+#ifdef FT_KERNEL
+namespace FTK {
+#endif
+
 
 class FFlPBUSHCOEFF : public FFlAttributeBase
 {
@@ -40,4 +44,7 @@ public:
 typedef FFaSingelton<FFlTypeInfoSpec,FFlPBUSHCOEFF>    FFlPBUSHCOEFFTypeInfoSpec;
 typedef FFaSingelton<FFlFEAttributeSpec,FFlPBUSHCOEFF> FFlPBUSHCOEFFAttributeSpec;
 
+#ifdef FT_KERNEL
+} // namespace FTK
+#endif
 #endif

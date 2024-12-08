@@ -13,6 +13,10 @@
 #include "FFaLib/FFaAlgebra/FFaTensor3.H"
 #include "FFaLib/FFaDefinitions/FFaMsg.H"
 
+#ifdef FT_KERNEL
+namespace FTK {
+#endif
+
 
 void FFlCMASS::init()
 {
@@ -158,3 +162,6 @@ bool FFlCMASS::RtMR(const std::vector<double>& M,
   return haveNonZeroInertia;
 }
 
+#ifdef FT_KERNEL
+} // namespace FTK
+#endif

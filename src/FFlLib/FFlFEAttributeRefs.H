@@ -8,20 +8,25 @@
 #ifndef FFL_FE_ATTRIBUTE_REFS_H
 #define FFL_FE_ATTRIBUTE_REFS_H
 
-#include "FFlReference.H"
+#include "FFlLib/FFlReference.H"
 #include <vector>
 #include <string>
 #include <map>
 
-class FFlAttributeBase;
-class FFlFEAttributeSpec;
 class FFaCheckSum;
+class FFlFEAttributeSpec;
 
-typedef FFlReference<FFlAttributeBase>     AttribRef;
-typedef std::pair<unsigned char,AttribRef> AttribData;
-typedef std::vector<AttribData>            AttribsVec;
-typedef AttribsVec::const_iterator         AttribsCIter;
-typedef std::map<int,FFlAttributeBase*>    AttributeMap;
+#ifdef FT_KERNEL
+namespace FTK {
+#endif
+
+class FFlAttributeBase;
+
+using AttribRef    = FFlReference<FFlAttributeBase>;
+using AttribData   = std::pair<unsigned char,AttribRef>;
+using AttribsVec   = std::vector<AttribData>;
+using AttribsCIter = AttribsVec::const_iterator;
+using AttributeMap = std::map<int,FFlAttributeBase*>;
 
 
 class FFlFEAttributeRefs
@@ -87,4 +92,7 @@ private:
   { return k1 < k2; }
 };
 
+#ifdef FT_KERNEL
+} // namespace FTK
+#endif
 #endif

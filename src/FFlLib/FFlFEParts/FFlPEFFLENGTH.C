@@ -5,10 +5,12 @@
 // This file is part of FEDEM - https://openfedem.org
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "FFlLib/FFlFEParts/FFlPSPRING.H"
 #include "FFlLib/FFlFEParts/FFlPEFFLENGTH.H"
-
 #include "FFaLib/FFaAlgebra/FFaUnitCalculator.H"
+
+#ifdef FT_KERNEL
+namespace FTK {
+#endif
 
 
 FFlPEFFLENGTH::FFlPEFFLENGTH(int id) : FFlAttributeBase(id)
@@ -47,3 +49,7 @@ void FFlPEFFLENGTH::init()
     (FFlPEFFLENGTHTypeInfoSpec::instance()->getTypeName(),
      FFaDynCB2S(FFlPEFFLENGTH::create,int,FFlAttributeBase*&));
 }
+
+#ifdef FT_KERNEL
+} // namespace FTK
+#endif

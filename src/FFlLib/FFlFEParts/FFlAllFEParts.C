@@ -5,8 +5,12 @@
 // This file is part of FEDEM - https://openfedem.org
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "FFlAllFEParts.H"
+#include "FFlLib/FFlFEParts/FFlAllFEParts.H"
 #include "FFlLib/FFlMemPool.H"
+
+#ifdef FT_KERNEL
+using namespace FTK;
+#endif
 
 //! Set to \e true when initialized, to avoid initializing more than once.
 static bool initialized = false;
@@ -106,7 +110,7 @@ template<class T> void releaseAttribute()
 
 void FFl::releaseAllElements()
 {
-  FFlNodeTypeInfoSpec::removeInstance();
+  FFaSingelton<FFlTypeInfoSpec,FFlNode>::removeInstance();
 
   releaseElement<FFlRGD>();
   releaseElement<FFlRBAR>();
@@ -177,7 +181,7 @@ void FFl::releaseAllElements()
   VisualFactory::removeInstance();
 #endif
 
-  FFlGroupTypeInfoSpec::removeInstance();
+  FFaSingelton<FFlTypeInfoSpec,FFlGroup>::removeInstance();
 
   FFlMemPool::deleteAllLinkMemPools();
 

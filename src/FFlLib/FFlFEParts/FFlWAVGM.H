@@ -17,6 +17,10 @@
 #endif
 #include "FFaLib/FFaPatterns/FFaSingelton.H"
 
+#ifdef FT_KERNEL
+namespace FTK {
+#endif
+
 
 class FFlWAVGMTopSpec : public FFlFEElementTopSpec
 {
@@ -76,4 +80,7 @@ protected:
 typedef FFaSingelton<FFlFEAttributeSpec,FFlWAVGM> FFlWAVGMAttributeSpec;
 typedef FFaSingelton<FFlTypeInfoSpec,FFlWAVGM>    FFlWAVGMTypeInfoSpec;
 
+#ifdef FT_KERNEL
+} // namespace FTK
+#endif
 #endif

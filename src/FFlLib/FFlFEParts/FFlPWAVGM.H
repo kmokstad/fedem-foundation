@@ -17,6 +17,10 @@
 
 #include <array>
 
+#ifdef FT_KERNEL
+namespace FTK {
+#endif
+
 
 class FFlPWAVGM : public FFlAttributeBase
 {
@@ -46,4 +50,7 @@ public:
 typedef FFaSingelton<FFlTypeInfoSpec,FFlPWAVGM>    FFlPWAVGMTypeInfoSpec;
 typedef FFaSingelton<FFlFEAttributeSpec,FFlPWAVGM> FFlPWAVGMAttributeSpec;
 
+#ifdef FT_KERNEL
+} // namespace FTK
+#endif
 #endif

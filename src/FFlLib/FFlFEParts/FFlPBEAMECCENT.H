@@ -16,6 +16,10 @@
 #include "FFaLib/FFaAlgebra/FFaVec3.H"
 #include "FFaLib/FFaPatterns/FFaSingelton.H"
 
+#ifdef FT_KERNEL
+namespace FTK {
+#endif
+
 
 class FFlPBEAMECCENT : public FFlAttributeBase
 {
@@ -43,4 +47,7 @@ public:
 typedef FFaSingelton<FFlTypeInfoSpec,FFlPBEAMECCENT>    FFlPBEAMECCENTTypeInfoSpec;
 typedef FFaSingelton<FFlFEAttributeSpec,FFlPBEAMECCENT> FFlPBEAMECCENTAttributeSpec;
 
+#ifdef FT_KERNEL
+} // namespace FTK
+#endif
 #endif

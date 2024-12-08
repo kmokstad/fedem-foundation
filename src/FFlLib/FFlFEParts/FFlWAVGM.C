@@ -9,6 +9,10 @@
 #include "FFlLib/FFlFEParts/FFlNode.H"
 #include "FFaLib/FFaDefinitions/FFaMsg.H"
 
+#ifdef FT_KERNEL
+namespace FTK {
+#endif
+
 
 FFlWAVGM::FFlWAVGM(int id) : FFlElementBase(id)
 {
@@ -198,3 +202,7 @@ bool FFlWAVGM::removeMasterNodes(std::vector<int>& nodeRefs)
   nodeRefs.swap(nodeIdx);
   return true;
 }
+
+#ifdef FT_KERNEL
+} // namespace FTK
+#endif

@@ -7,6 +7,10 @@
 
 #include "FFlPRBAR.H"
 
+#ifdef FT_KERNEL
+namespace FTK {
+#endif
+
 
 FFlPRBAR::FFlPRBAR(int id) : FFlAttributeBase(id)
 {
@@ -60,3 +64,7 @@ void FFlPRBAR::init()
     (FFlPRBARTypeInfoSpec::instance()->getTypeName(),
      FFaDynCB2S(FFlPRBAR::create,int,FFlAttributeBase*&));
 }
+
+#ifdef FT_KERNEL
+} // namespace FTK
+#endif

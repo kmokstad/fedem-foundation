@@ -8,6 +8,10 @@
 #include "FFlLib/FFlFEParts/FFlPNSM.H"
 #include "FFaLib/FFaAlgebra/FFaUnitCalculator.H"
 
+#ifdef FT_KERNEL
+namespace FTK {
+#endif
+
 
 FFlPNSM::FFlPNSM(int id) : FFlAttributeBase(id)
 {
@@ -45,3 +49,7 @@ void FFlPNSM::init()
     (FFlPNSMTypeInfoSpec::instance()->getTypeName(),
      FFaDynCB2S(FFlPNSM::create,int,FFlAttributeBase*&));
 }
+
+#ifdef FT_KERNEL
+} // namespace FTK
+#endif

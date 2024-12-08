@@ -19,6 +19,10 @@
 #include <cstdlib>
 #include <cctype>
 
+#ifdef FT_KERNEL
+using namespace FTK;
+#endif
+
 
 /*!
   \brief Simple geometry model to VTF conversion utility.

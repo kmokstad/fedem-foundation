@@ -5,8 +5,12 @@
 // This file is part of FEDEM - https://openfedem.org
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "FFlPBUSHCOEFF.H"
+#include "FFlLib/FFlFEParts/FFlPBUSHCOEFF.H"
 #include "FFaLib/FFaAlgebra/FFaUnitCalculator.H"
+
+#ifdef FT_KERNEL
+namespace FTK {
+#endif
 
 
 FFlPBUSHCOEFF::FFlPBUSHCOEFF(int id) : FFlAttributeBase(id)
@@ -45,3 +49,7 @@ void FFlPBUSHCOEFF::init()
     (FFlPBUSHCOEFFTypeInfoSpec::instance()->getTypeName(),
      FFaDynCB2S(FFlPBUSHCOEFF::create,int,FFlAttributeBase*&));
 }
+
+#ifdef FT_KERNEL
+} // namespace FTK
+#endif

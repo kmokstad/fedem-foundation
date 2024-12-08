@@ -15,6 +15,10 @@
 #include "FFaLib/FFaAlgebra/FFaCheckSum.H"
 #include "FFaLib/FFaDefinitions/FFaMsg.H"
 
+#ifdef FT_KERNEL
+namespace FTK {
+#endif
+
 
 FFlFEAttributeRefs::FFlFEAttributeRefs(const FFlFEAttributeRefs& obj)
 {
@@ -260,3 +264,7 @@ int FFlFEAttributeRefs::getAttributeID(const std::string& atType) const
   // No message if no attribute of given type or illegal attribute type
   return 0;
 }
+
+#ifdef FT_KERNEL
+} // namespace FTK
+#endif

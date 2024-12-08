@@ -7,6 +7,10 @@
 
 #include "FFlPFATIGUE.H"
 
+#ifdef FT_KERNEL
+namespace FTK {
+#endif
+
 
 FFlPFATIGUE::FFlPFATIGUE(int id) : FFlAttributeBase(id)
 {
@@ -55,3 +59,7 @@ void FFlPFATIGUE::init()
     (FFlPFATIGUETypeInfoSpec::instance()->getTypeName(),
      FFaDynCB2S(FFlPFATIGUE::create,int,FFlAttributeBase*&));
 }
+
+#ifdef FT_KERNEL
+} // namespace FTK
+#endif

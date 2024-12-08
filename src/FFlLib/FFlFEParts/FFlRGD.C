@@ -8,6 +8,9 @@
 #include "FFlLib/FFlFEParts/FFlRGD.H"
 #include "FFlLib/FFlFEParts/FFlNode.H"
 
+#ifdef FT_KERNEL
+namespace FTK {
+#endif
 
 bool FFlRGDTopSpec::allowSlvAttach = true;
 
@@ -176,3 +179,7 @@ void FFlRGD::init()
 
   FFlRGDAttributeSpec::instance()->addLegalAttribute("PRGD", false);
 }
+
+#ifdef FT_KERNEL
+} // namespace FTK
+#endif

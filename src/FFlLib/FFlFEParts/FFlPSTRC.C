@@ -7,6 +7,10 @@
 
 #include "FFlPSTRC.H"
 
+#ifdef FT_KERNEL
+namespace FTK {
+#endif
+
 
 FFlPSTRC::FFlPSTRC(int id) : FFlAttributeBase(id)
 {
@@ -35,3 +39,7 @@ void FFlPSTRC::init()
     (FFlPSTRCTypeInfoSpec::instance()->getTypeName(),
      FFaDynCB2S(FFlPSTRC::create,int,FFlAttributeBase*&));
 }
+
+#ifdef FT_KERNEL
+} // namespace FTK
+#endif

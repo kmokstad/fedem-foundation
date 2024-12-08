@@ -17,6 +17,10 @@
 #endif
 #include "FFaLib/FFaPatterns/FFaSingelton.H"
 
+#ifdef FT_KERNEL
+namespace FTK {
+#endif
+
 
 /* TODO,kmo: This is not very elegant. The only difference between the two
    classes FFlSPRING and FFlRSPRING is that FFlSPRING has three DOFs per node
@@ -70,4 +74,7 @@ typedef FFaSingelton<FFlFEAttributeSpec,FFlRSPRING>  FFlRSPRINGAttributeSpec;
 typedef FFaSingelton<FFlFEElementTopSpec,FFlRSPRING> FFlRSPRINGElementTopSpec;
 typedef FFaSingelton<FFlTypeInfoSpec,FFlRSPRING>     FFlRSPRINGTypeInfoSpec;
 
+#ifdef FT_KERNEL
+} // namespace FTK
+#endif
 #endif

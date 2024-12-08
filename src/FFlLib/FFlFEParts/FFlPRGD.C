@@ -7,6 +7,10 @@
 
 #include "FFlPRGD.H"
 
+#ifdef FT_KERNEL
+namespace FTK {
+#endif
+
 
 FFlPRGD::FFlPRGD(int id) : FFlAttributeBase(id)
 {
@@ -43,3 +47,7 @@ void FFlPRGD::init()
     (FFlPRGDTypeInfoSpec::instance()->getTypeName(),
      FFaDynCB2S(FFlPRGD::create,int,FFlAttributeBase*&));
 }
+
+#ifdef FT_KERNEL
+} // namespace FTK
+#endif

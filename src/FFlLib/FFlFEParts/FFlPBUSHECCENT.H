@@ -16,6 +16,10 @@
 #include "FFaLib/FFaAlgebra/FFaVec3.H"
 #include "FFaLib/FFaPatterns/FFaSingelton.H"
 
+#ifdef FT_KERNEL
+namespace FTK {
+#endif
+
 
 class FFlPBUSHECCENT : public FFlAttributeBase
 {
@@ -39,4 +43,7 @@ public:
 typedef FFaSingelton<FFlTypeInfoSpec,FFlPBUSHECCENT>    FFlPBUSHECCENTTypeInfoSpec;
 typedef FFaSingelton<FFlFEAttributeSpec,FFlPBUSHECCENT> FFlPBUSHECCENTAttributeSpec;
 
+#ifdef FT_KERNEL
+} // namespace FTK
+#endif
 #endif

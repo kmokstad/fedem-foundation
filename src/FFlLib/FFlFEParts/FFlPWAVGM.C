@@ -7,6 +7,10 @@
 
 #include "FFlPWAVGM.H"
 
+#ifdef FT_KERNEL
+namespace FTK {
+#endif
+
 
 FFlPWAVGM::FFlPWAVGM(int id) : FFlAttributeBase(id)
 {
@@ -97,3 +101,7 @@ FFlAttributeBase* FFlPWAVGM::removeWeights (const std::vector<int>& nodes, size_
 
   return newAtt;
 }
+
+#ifdef FT_KERNEL
+} // namespace FTK
+#endif

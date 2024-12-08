@@ -17,6 +17,10 @@
 #endif
 #include "FFaLib/FFaPatterns/FFaSingelton.H"
 
+#ifdef FT_KERNEL
+namespace FTK {
+#endif
+
 
 class FFlRGDTopSpec : public FFlFEElementTopSpec
 {
@@ -78,4 +82,7 @@ protected:
 typedef FFaSingelton<FFlFEAttributeSpec,FFlRGD> FFlRGDAttributeSpec;
 typedef FFaSingelton<FFlTypeInfoSpec,FFlRGD>    FFlRGDTypeInfoSpec;
 
+#ifdef FT_KERNEL
+} // namespace FTK
+#endif
 #endif

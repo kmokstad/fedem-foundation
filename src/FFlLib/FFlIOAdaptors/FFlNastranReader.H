@@ -8,7 +8,7 @@
 #ifndef FFL_NASTRAN_READER_H
 #define FFL_NASTRAN_READER_H
 
-#include "FFlReaderBase.H"
+#include "FFlLib/FFlIOAdaptors/FFlReaderBase.H"
 #include "FFlLib/FFlUtils.H"
 #include "FFaLib/FFaAlgebra/FFaMat34.H"
 #include "FFaLib/FFaAlgebra/FFaVec3.H"
@@ -20,11 +20,16 @@
 
 #define DEF_PROCESSOR(rec) bool process_##rec (std::vector<std::string>& entry);
 
+class FFaCheckSum;
+
+#ifdef FT_KERNEL
+namespace FTK {
+#endif
+
 class FFlAttributeBase;
 class FFlElementBase;
 class FFlLoadBase;
 class FFlGroup;
-class FFaCheckSum;
 
 
 class FFlNastranReader : public FFlReaderBase
@@ -276,4 +281,7 @@ protected:
   DEF_PROCESSOR( SPC1   ) // Single-point constraints, alternate form
 };
 
+#ifdef FT_KERNEL
+} // namespace FTK
+#endif
 #endif

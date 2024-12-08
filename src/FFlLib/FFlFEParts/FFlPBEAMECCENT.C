@@ -8,6 +8,10 @@
 #include "FFlLib/FFlFEParts/FFlPBEAMECCENT.H"
 #include "FFaLib/FFaAlgebra/FFaUnitCalculator.H"
 
+#ifdef FT_KERNEL
+namespace FTK {
+#endif
+
 
 FFlPBEAMECCENT::FFlPBEAMECCENT(int id) : FFlAttributeBase(id)
 {
@@ -55,3 +59,7 @@ void FFlPBEAMECCENT::resize(size_t n)
   else
     this->FFlAttributeBase::resize(n/3);
 }
+
+#ifdef FT_KERNEL
+} // namespace FTK
+#endif

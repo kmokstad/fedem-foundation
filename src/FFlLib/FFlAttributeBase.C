@@ -16,6 +16,10 @@
 #include <iomanip>
 #endif
 
+#ifdef FT_KERNEL
+namespace FTK {
+#endif
+
 
 const std::string& FFlAttributeBase::getTypeName() const
 {
@@ -69,3 +73,7 @@ void FFlAttributeBase::print(const char* prefix) const
   for (FFlFieldBase* field : myFields) std::cout <<" "<< *field;
   std::cout << std::endl;
 }
+
+#ifdef FT_KERNEL
+} // namespace FTK
+#endif

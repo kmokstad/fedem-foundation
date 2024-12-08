@@ -7,6 +7,10 @@
 
 #include "FFlLib/FFlFEParts/FFlSPRING.H"
 
+#ifdef FT_KERNEL
+namespace FTK {
+#endif
+
 
 void FFlSPRING::init()
 {
@@ -34,3 +38,7 @@ void FFlRSPRING::init()
   FFlRSPRINGElementTopSpec::instance()->setNodeCount(2);
   FFlRSPRINGElementTopSpec::instance()->setNodeDOFs(6);
 }
+
+#ifdef FT_KERNEL
+} // namespace FTK
+#endif

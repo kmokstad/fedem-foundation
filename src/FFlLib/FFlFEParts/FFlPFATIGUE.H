@@ -15,6 +15,10 @@
 
 #include "FFaLib/FFaPatterns/FFaSingelton.H"
 
+#ifdef FT_KERNEL
+namespace FTK {
+#endif
+
 
 class FFlPFATIGUE : public FFlAttributeBase
 {
@@ -40,4 +44,7 @@ public:
 typedef FFaSingelton<FFlTypeInfoSpec,FFlPFATIGUE>    FFlPFATIGUETypeInfoSpec;
 typedef FFaSingelton<FFlFEAttributeSpec,FFlPFATIGUE> FFlPFATIGUEAttributeSpec;
 
+#ifdef FT_KERNEL
+} // namespace FTK
+#endif
 #endif

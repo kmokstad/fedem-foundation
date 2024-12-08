@@ -17,6 +17,10 @@
 #include "FFaLib/FFaAlgebra/FFaTensor3.H"
 #include "FFaLib/FFaAlgebra/FFaMat33.H"
 
+#ifdef FT_KERNEL
+namespace FTK {
+#endif
+
 
 FFlElementBase::FFlElementBase(int id) : FFlPartBase(id)
 {
@@ -124,3 +128,7 @@ bool FFlElementBase::invertMapping(const FaVec3&, double*) const
             << this->getTypeName() <<" elements."<< std::endl;
   return false;
 }
+
+#ifdef FT_KERNEL
+} // namespace FTK
+#endif

@@ -17,6 +17,10 @@
 #endif
 #include "FFaLib/FFaPatterns/FFaSingelton.H"
 
+#ifdef FT_KERNEL
+namespace FTK {
+#endif
+
 
 class FFlStrainCoatBase : public FFlElementBase
 {
@@ -136,4 +140,7 @@ typedef FFaSingelton<FFlFEAttributeSpec,FFlSTRCQ8>  FFlSTRCQ8AttributeSpec;
 typedef FFaSingelton<FFlFEElementTopSpec,FFlSTRCQ8> FFlSTRCQ8ElementTopSpec;
 typedef FFaSingelton<FFlTypeInfoSpec,FFlSTRCQ8>     FFlSTRCQ8TypeInfoSpec;
 
+#ifdef FT_KERNEL
+} // namespace FTK
+#endif
 #endif

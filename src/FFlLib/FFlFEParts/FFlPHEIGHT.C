@@ -5,8 +5,12 @@
 // This file is part of FEDEM - https://openfedem.org
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "FFlPHEIGHT.H"
+#include "FFlLib/FFlFEParts/FFlPHEIGHT.H"
 #include "FFaLib/FFaAlgebra/FFaUnitCalculator.H"
+
+#ifdef FT_KERNEL
+namespace FTK {
+#endif
 
 
 FFlPHEIGHT::FFlPHEIGHT(int id) : FFlAttributeBase(id)
@@ -41,3 +45,7 @@ void FFlPHEIGHT::init()
      FFaDynCB2S(FFlPHEIGHT::create,int,FFlAttributeBase*&));
 
 }
+
+#ifdef FT_KERNEL
+} // namespace FTK
+#endif

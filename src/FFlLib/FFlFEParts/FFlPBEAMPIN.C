@@ -7,6 +7,10 @@
 
 #include "FFlPBEAMPIN.H"
 
+#ifdef FT_KERNEL
+namespace FTK {
+#endif
+
 
 FFlPBEAMPIN::FFlPBEAMPIN(int id) : FFlAttributeBase(id)
 {
@@ -51,4 +55,6 @@ void FFlPBEAMPIN::init()
      FFaDynCB2S(FFlPBEAMPIN::create,int,FFlAttributeBase*&));
 }
 
-
+#ifdef FT_KERNEL
+} // namespace FTK
+#endif

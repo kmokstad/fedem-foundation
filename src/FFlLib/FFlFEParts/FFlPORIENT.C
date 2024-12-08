@@ -7,6 +7,10 @@
 
 #include "FFlLib/FFlFEParts/FFlPORIENT.H"
 
+#ifdef FT_KERNEL
+namespace FTK {
+#endif
+
 
 FFlPORIENT::FFlPORIENT(int id) : FFlAttributeBase(id)
 {
@@ -92,3 +96,7 @@ void FFlPORIENT3::init()
     (FFlPORIENT3TypeInfoSpec::instance()->getTypeName(),
      FFaDynCB2S(FFlPORIENT3::create,int,FFlAttributeBase*&));
 }
+
+#ifdef FT_KERNEL
+} // namespace FTK
+#endif

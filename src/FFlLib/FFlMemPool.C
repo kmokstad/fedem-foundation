@@ -73,7 +73,7 @@ void FFlMemPool::deleteAllLinkMemPools()
 }
 
 
-void FFlMemPool::setAsMemPoolPart(FFlLinkHandler*
+void FFlMemPool::setAsMemPoolPart(PartHandler*
 #ifdef FT_USE_MEMPOOL
                                   link
 #endif
@@ -112,7 +112,7 @@ void FFlMemPool::setAsMemPoolPart(FFlLinkHandler*
 }
 
 
-void FFlMemPool::freeMemPoolPart(FFlLinkHandler*
+void FFlMemPool::freeMemPoolPart(PartHandler*
 #ifdef FT_USE_MEMPOOL
                                  link
 #endif

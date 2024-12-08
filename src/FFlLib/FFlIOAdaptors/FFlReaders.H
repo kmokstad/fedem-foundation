@@ -15,6 +15,10 @@
 #include "FFaLib/FFaPatterns/FFaSingelton.H"
 #include "FFaLib/FFaDynCalls/FFaDynCB.H"
 
+#ifdef FT_KERNEL
+namespace FTK {
+#endif
+
 class FFlLinkHandler;
 
 
@@ -64,4 +68,7 @@ private:
   friend class FFaSingelton<FFlReaders>;
 };
 
+#ifdef FT_KERNEL
+} // namespace FTK
+#endif
 #endif

@@ -9,6 +9,10 @@
 #include "FFaLib/FFaAlgebra/FFaUnitCalculator.H"
 #include "FFaLib/FFaDefinitions/FFaMsg.H"
 
+#ifdef FT_KERNEL
+namespace FTK {
+#endif
+
 
 FFlCLOAD::FFlCLOAD(int id, const char type) : FFlLoadBase(id), myType(type)
 {
@@ -141,3 +145,7 @@ void FFlCMOMENT::init()
     (FFlCMOMENTTypeInfoSpec::instance()->getTypeName(),
      FFaDynCB2S(FFlCMOMENT::create,int,FFlLoadBase*&));
 }
+
+#ifdef FT_KERNEL
+} // namespace FTK
+#endif
