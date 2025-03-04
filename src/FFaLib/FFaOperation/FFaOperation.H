@@ -25,6 +25,7 @@
 #include "FFaLib/FFaDynCalls/FFaDynCB.H"
 #ifdef FT_USE_MEMPOOL
 #include "FFaLib/FFaPatterns/FFaMemPool.H"
+#include "FFaLib/FFaPatterns/FFaSingelton.H"
 #endif
 
 
@@ -47,20 +48,6 @@ public:
   void ref() { myRefCount++; }
   //! \brief Decrements the reference counter, and deletes *this if zero.
   void unref() { if (--myRefCount <= 0) delete this; }
-
-#ifdef FT_USE_MEMPOOL
-  //! \brief Frees the memory pool associated with the operation manager.
-  static void freeMemPools() { getMemPoolMgr()->freeMemPools(); }
-  //! \brief Returns a pointer to the operations memory pool manager.
-  static FFaMemPoolMgr* getMemPoolMgr()
-  {
-    static FFaMemPoolMgr memPools;
-    return &memPools;
-  }
-#else
-  //! \brief Dummy method doing nothing.
-  static void freeMemPools() {}
-#endif
 
 private:
   short int myRefCount; //!< Reference counter
@@ -112,40 +99,31 @@ protected:
   bool IAmEvaluated; //!< If \e true, the cached value will be used
 };
 
-//! \cond DO_NOT_DOCUMENT
-template <> inline
-FFaOperation<int>::FFaOperation() : myCachedValue(0), IAmEvaluated(false) {}
-
-template <> inline
-FFaOperation<float>::FFaOperation() : myCachedValue(0), IAmEvaluated(false) {}
-
-template <> inline
-FFaOperation<double>::FFaOperation() : myCachedValue(0), IAmEvaluated(false) {}
-//! \endcond
-
 
 /*!
   \brief A class used to manage and store callbacks of a certain type.
   \details This must be a base class of all operations that are supposed
-  to have changeable calculations.
+  to have changeable calculations. The type of the callback is given through
+  the template argument \a CB.
 */
 
-template <class OperationCB>
+template <class CB>
 class FFaOperationContainer
 {
   //! \brief Convenience type definition, name-to-operation mapping.
-  typedef std::map<std::string,OperationCB> OperCBMap;
+  using OperCBMap = std::map<std::string,CB>;
 
 public:
-  //! \brief Adds a named operation to the \a OperationCB container.
-  static void addOperation(const std::string& name, OperationCB operation)
+  //! \brief Adds a named operation to the operation container.
+  static void addOperation(const std::string& name, CB operation)
   {
-    static std::map<std::string,OperationCB> ops;
-    ops[name] = operation;
+    static OperCBMap ops;
     ourOperations = &ops;
+    if (!name.empty())
+      ops[name] = operation;
   }
 
-  //! \brief Returns a list of all operations of type \a OperationCB.
+  //! \brief Returns a list of all operations in this container.
   static void getOperations(std::vector<std::string>& names)
   {
     names.clear();
@@ -157,9 +135,9 @@ public:
     }
   }
 
-  //! \brief Defines the default operation of type \a OperationCB.
+  //! \brief Defines the default operation.
   static void setDefaultOperation(const std::string& o) { ourDefaultOper = o; }
-  //! \brief Returns the default operation of type \a OperationCB.
+  //! \brief Returns the default operation.
   static const std::string& getDefaultOperation() { return ourDefaultOper; }
 
 protected:
@@ -186,20 +164,14 @@ protected:
     myOperationCB.erase();
   }
 
-  OperationCB myOperationCB; //!< The selected operation
+  CB myOperationCB; //!< The selected operation
 
 private:
-  //! Static container for operations of type \a OperationCB.
-  static std::map<std::string,OperationCB>* ourOperations;
-  //! Name of the default operation type \a OperationCB.
+  //! Container of all operations of the type \a CB.
+  static OperCBMap*  ourOperations;
+  //! Name of the default operation for this type.
   static std::string ourDefaultOper;
 };
-
-template <class OperationCB>
-std::map<std::string,OperationCB>* FFaOperationContainer<OperationCB>::ourOperations = NULL;
-
-template <class OperationCB>
-std::string FFaOperationContainer<OperationCB>::ourDefaultOper;
 
 
 /*!
@@ -264,14 +236,6 @@ private:
   FFA_MAKE_MEMPOOL;
 #endif
 };
-
-#ifdef FT_USE_MEMPOOL
-//! \cond DO_NOT_DOCUMENT
-template <class RetType, class PrmType>
-FFaMemPool FFaUnaryOp<RetType,PrmType>::ourMemPool = FFaMemPool(sizeof(FFaUnaryOp<RetType,PrmType>),
-                                                                FFaOperationBase::getMemPoolMgr());
-//! \endcond
-#endif
 
 
 /*!
@@ -348,23 +312,56 @@ private:
 #endif
 };
 
-#ifdef FT_USE_MEMPOOL
-//! \cond DO_NOT_DOCUMENT
-template <class RetType>
-FFaMemPool FFaNToOneOp<RetType>::ourMemPool = FFaMemPool(sizeof(FFaNToOneOp<RetType>),
-                                                         FFaOperationBase::getMemPoolMgr());
-//! \endcond
-#endif
 
-
-namespace FFa
+namespace FFaOper
 {
-  //! \brief Defines a special result \a value and its associated equivalent value.
+  //! \brief Defines a special result value and its associated equivalent value.
   //! \details The special result value is used by some unary operations
   //! transforming result vectors into a double value. When \a value is
   //! encountered among the input values for an operation, it will be
   //! replaced by \a equiv before the actual operation is invoked.
   void setSpecialResultValue(double value, double equiv);
+
+#ifdef FT_USE_MEMPOOL
+  //! \brief Convenience alias for the operations memory pool manager type.
+  using MemPoolMgr = FFaSingelton<FFaMemPoolMgr,FFaOperationBase>;
+  //! \brief Returns a pointer to the operations memory pool manager.
+  FFaMemPoolMgr* getMemPoolMgr();
+  //! \brief Frees the memory pool associated with the operation manager.
+  void freeMemPools(bool removeMgr = false);
+#endif
 }
 
+//! \cond DO_NOT_DOCUMENT
+// Constructor specializations for basic types
+
+template <> inline
+FFaOperation<int>::FFaOperation() : myCachedValue(0), IAmEvaluated(false) {}
+
+template <> inline
+FFaOperation<float>::FFaOperation() : myCachedValue(0), IAmEvaluated(false) {}
+
+template <> inline
+FFaOperation<double>::FFaOperation() : myCachedValue(0), IAmEvaluated(false) {}
+
+// Initialization of static variables
+
+template <class CB>
+std::map<std::string,CB>* FFaOperationContainer<CB>::ourOperations = NULL;
+
+template <class CB>
+std::string FFaOperationContainer<CB>::ourDefaultOper;
+
+#ifdef FT_USE_MEMPOOL
+
+template <class RetType, class PrmType>
+FFaMemPool FFaUnaryOp<RetType,PrmType>::ourMemPool =
+  FFaMemPool(sizeof(FFaUnaryOp<RetType,PrmType>),FFaOper::getMemPoolMgr());
+
+template <class RetType>
+FFaMemPool FFaNToOneOp<RetType>::ourMemPool =
+  FFaMemPool(sizeof(FFaNToOneOp<RetType>),FFaOper::getMemPoolMgr());
+
+#endif
+//! \endcond
 #endif

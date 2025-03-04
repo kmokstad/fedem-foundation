@@ -76,7 +76,7 @@ private:
 //! \cond DO_NOT_DOCUMENT
 template <class RetType>
 FFaMemPool FFrReadOp<RetType>::ourMemPool = FFaMemPool(sizeof(FFrReadOp<RetType>),
-						       FFaOperationBase::getMemPoolMgr());
+                                                       FFaOper::getMemPoolMgr());
 //! \endcond
 #endif
 

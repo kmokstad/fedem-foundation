@@ -349,8 +349,26 @@ void FFa::initBasicOps()
 }
 
 
-void FFa::setSpecialResultValue(double value, double equiv)
+void FFaOper::setSpecialResultValue(double value, double equiv)
 {
   specialValue = value;
   specialEquiv = equiv;
 }
+
+#ifdef FT_USE_MEMPOOL
+
+FFaMemPoolMgr* FFaOper::getMemPoolMgr()
+{
+  return MemPoolMgr::instance();
+}
+
+
+void FFaOper::freeMemPools(bool removeMgr)
+{
+  if (removeMgr)
+    MemPoolMgr::removeInstance();
+  else
+    MemPoolMgr::instance()->freeMemPools();
+}
+
+#endif
