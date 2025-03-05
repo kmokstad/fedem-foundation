@@ -1,0 +1,5 @@
+Not surce we can to this, since the ourMemPool members are static variables
+initialized only once at startup, and referring to the memory pool manager
+as a heap-allocated singelton object. If the manager is released the
+ourMemPool variables should be notified, such that they can be reinitalized
+if used again in the same session. This does not happen now.
