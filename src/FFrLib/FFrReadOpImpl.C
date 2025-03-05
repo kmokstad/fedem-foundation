@@ -69,6 +69,9 @@ void FFr::initReadOps()
 void FFr::clearReadOps()
 {
   OperationFactory::removeInstance();
+#ifdef FT_USE_MEMPOOL
+  FFaOper::freeMemPools(true);
+#endif
   initialized = false;
 }
 
