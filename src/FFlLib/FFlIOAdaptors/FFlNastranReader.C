@@ -302,7 +302,13 @@ bool FFlNastranReader::read (std::istream& is)
   bool stillOK = procOK = true;
   while (sizeOK && (stillOK = this->getNextEntry(is,entry)))
     if (entry.name == endOfBulk)
+    {
+      // In case the last bulk data entry in the file is a group definition
+      // we need to check if it is named here, before exiting
+      this->nameFromLastComment(lastGroup,true);
+      lastGroup = NULL;
       break;
+    }
     else if (!entry.cont.empty())
       ucEntries.push_back(entry);
     else if (!this->processThisEntry(entry))
@@ -840,15 +846,7 @@ int FFlNastranReader::getNextField (std::istream& is, std::string& field,
 
 bool FFlNastranReader::processThisEntry (BulkEntry& entry)
 {
-  if (lastGroup && lastComment.first &&
-      extractNameFromComment(lastComment.second,true))
-  {
-#if FFL_DEBUG > 2
-    std::cout <<"Element group "<< lastGroup->getID()
-              <<" is named \""<< lastComment.second <<"\""<< std::endl;
-#endif
-    lastGroup->setName(lastComment.second);
-  }
+  this->nameFromLastComment(lastGroup,true);
   lastGroup = NULL;
 
   START_TIMER("processThisEntry")
@@ -913,8 +911,7 @@ bool FFlNastranReader::processAllSets (std::istream& fs, const int startBulk)
         else
         {
           // Check if the group was named after the group definition itself
-          if (lastComment.first && extractNameFromComment(lastComment.second))
-            aGroup->setName(lastComment.second);
+          this->nameFromLastComment(aGroup);
           myLink->addGroup(aGroup); // Add element group to the FE model
         }
         aGroup = NULL;
@@ -951,7 +948,7 @@ bool FFlNastranReader::processAllSets (std::istream& fs, const int startBulk)
 
       // Check if the group is named before the group definition itself
       else if (lastComment.first > 0 && lastComment.first < startLin &&
-               extractNameFromComment(lastComment.second))
+               this->extractNameFromLastComment())
       {
         aGroup->setName(lastComment.second);
         myLink->addGroup(aGroup);
@@ -971,8 +968,7 @@ bool FFlNastranReader::processAllSets (std::istream& fs, const int startBulk)
     else
     {
       // Check if the group was named after the group definition itself
-      if (lastComment.first && extractNameFromComment(lastComment.second))
-        aGroup->setName(lastComment.second);
+      this->nameFromLastComment(aGroup);
       myLink->addGroup(aGroup);
     }
     lastComment = { 0, "" };
@@ -1149,9 +1145,23 @@ void FFlNastranReader::processAssignFile (const std::string& line)
 }
 
 
-bool FFlNastranReader::extractNameFromComment (std::string& commentLine,
-					       bool first)
+bool FFlNastranReader::nameFromLastComment (FFlGroup* group, bool first)
 {
+  if (!group || !lastComment.first || !this->extractNameFromLastComment(first))
+    return false;
+
+#if FFL_DEBUG > 2
+  std::cout <<"Element group "<< group->getID()
+            <<" is named \""<< lastComment.second <<"\""<< std::endl;
+#endif
+  group->setName(lastComment.second);
+  return true;
+}
+
+
+bool FFlNastranReader::extractNameFromLastComment (bool first)
+{
+  std::string& commentLine = lastComment.second;
 #if FFL_DEBUG > 1
   std::cout <<"FFlNastranReader: Processing comment\n"<< commentLine;
 #endif
