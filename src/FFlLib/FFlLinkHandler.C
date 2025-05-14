@@ -211,15 +211,18 @@ void FFlLinkHandler::deleteGeometry()
   myElements.clear();
   myFElements.clear();
   myBushElements.clear();
+  myOP2files.clear();
   myNodes.clear();
   myFEnodes.clear();
 #ifdef FT_USE_VERTEX
   myVertices.clear();
+  myVxMapping.clear();
 #endif
   myGroupMap.clear();
   myLoads.clear();
   myAttributes.clear();
   uniqueAtts.clear();
+  myNodeMapping.clear();
 #ifdef FT_USE_VISUALS
   myVisuals.clear();
 #endif
@@ -235,6 +238,7 @@ void FFlLinkHandler::deleteGeometry()
   areVisualsSorted = true;
 #endif
 
+  nGenDofs = 0;
   isResolved = true;
 }
 
@@ -726,6 +730,7 @@ FFlNode* FFlLinkHandler::getFENode(int inod) const
 {
   if (inod <= 0) return NULL;
 
+  size_t idx = inod-1;
   if (hasLooseNodes)
   {
     if (myFEnodes.empty())
@@ -743,11 +748,11 @@ FFlNode* FFlLinkHandler::getFENode(int inod) const
         return NULL;
     }
 
-    if ((size_t)inod <= myFEnodes.size())
-      return myFEnodes[inod-1];
+    if (idx < myFEnodes.size())
+      return myFEnodes[idx];
   }
-  else if ((size_t)inod <= myNodes.size())
-    return myNodes[inod-1]; // Assuming no loose nodes exist!
+  else if (idx < myNodes.size())
+    return myNodes[idx]; // Assuming no loose nodes exist!
 
   return NULL;
 }
@@ -807,8 +812,8 @@ FFlLinkHandler::ElementsIter FFlLinkHandler::getElementIter(int ID) const
 
 FFlElementBase* FFlLinkHandler::getElement(int ID, bool internalID) const
 {
-  if (internalID)
-    return ID >= 0 && (size_t)ID < myElements.size() ? myElements[ID] : NULL;
+  if (internalID && ID >= 0)
+    return ID < static_cast<int>(myElements.size()) ? myElements[ID] : NULL;
 
   ElementsIter eit = this->getElementIter(ID);
   return eit == myElements.end() ? NULL : *eit;
@@ -909,7 +914,7 @@ FFlElementBase* FFlLinkHandler::getFiniteElement(int iel) const
     if (this->buildFiniteElementVec() < 1)
       return NULL;
 
-  return (size_t)iel <= myFElements.size() ? myFElements[iel-1] : NULL;
+  return --iel < static_cast<int>(myFElements.size()) ? myFElements[iel] : NULL;
 }
 
 
@@ -963,7 +968,7 @@ const AttributeMap& FFlLinkHandler::getAttributes(const std::string& type) const
   which are not connected to other elements than the spider itself.
 */
 
-bool FFlLinkHandler::getRefNodes(std::vector<FFlNode*>& refNodes) const
+bool FFlLinkHandler::getRefNodes(NodesVec& refNodes) const
 {
   refNodes.clear();
   if (myNodes.empty())
@@ -1731,6 +1736,28 @@ FFlElementBase* FFlLinkHandler::findPoint(const FaVec3& point, double* xi,
 }
 
 
+FFlNode* FFlLinkHandler::getNodeConnectivity(int ID, Strings& elmList) const
+{
+  NodesIter nit = this->getNodeIter(ID);
+  if (nit == myNodes.end()) return NULL;
+
+  if (myNodeMapping.empty())
+    for (FFlElementBase* elm : myElements)
+      for (NodeCIter n = elm->nodesBegin(); n != elm->nodesEnd(); ++n)
+        myNodeMapping[n->getReference()].insert(elm);
+
+  std::map<FFlNode*,ElementsSet>::const_iterator cit = myNodeMapping.find(*nit);
+  if (cit == myNodeMapping.end() || cit->second.empty()) return NULL;
+
+  elmList.clear();
+  elmList.reserve(cit->second.size());
+  for (FFlElementBase* elm : cit->second)
+    elmList.push_back(elm->getTypeName() + " " + std::to_string(elm->getID()));
+
+  return *nit;
+}
+
+
 #ifdef FT_USE_VERTEX
 FFlVertex* FFlLinkHandler::getVertex(size_t i) const
 {
@@ -1958,7 +1985,7 @@ bool FFlLinkHandler::resolve(bool subdivParabolic, bool fromSESAM)
       // Find all dependent nodes that are connected to other elements
       int looseDn = 0;
       NodeCIter n = elm->nodesBegin();
-      std::vector<FFlNode*> depNodes;
+      NodesVec depNodes;
       depNodes.reserve(nNod-1);
       for (++n; n != elm->nodesEnd(); ++n)
         if ((*n)->hasDOFs())
@@ -2354,7 +2381,7 @@ int FFlLinkHandler::createConnector(const FFaCompoundGeometry& compound,
   if (spiderType < 2 || spiderType > 3)
     return -1; // Invalid spider type
 
-  std::vector<FFlNode*> nodes;
+  NodesVec nodes;
   for (FFlNode* node : myNodes)
     if (node->hasDOFs() && node->getStatus() == FFlNode::INTERNAL)
       if (compound.isInside(node->getPos()))
