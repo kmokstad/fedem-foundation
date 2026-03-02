@@ -109,19 +109,19 @@ protected:
 
   // Link part generation :
 
-  void createLinkFullFaces(FFlGroupPartData& internalFaces,
-                           FFlGroupPartData& surfaceFaces);
+  void createLinkFullFaces(FFlGroupPartData& internal,
+                           FFlGroupPartData& surface);
 
-  void createLinkFullEdges(FFlGroupPartData& internalLines,
-                           FFlGroupPartData& surfaceLines,
-                           FFlGroupPartData& outlineLines);
+  void createLinkFullEdges(FFlGroupPartData& internal,
+                           FFlGroupPartData& surface,
+                           FFlGroupPartData& outline);
 
-  void createLinkReducedFaces(FFlGroupPartData& internalFaces,
-                              FFlGroupPartData& surfaceFaces);
+  void createLinkReducedFaces(FFlGroupPartData& internal,
+                              FFlGroupPartData& surface);
 
-  void createLinkReducedEdges(FFlGroupPartData& internalLines,
-                              FFlGroupPartData& surfaceLines,
-                              FFlGroupPartData& outlineLines);
+  void createLinkReducedEdges(FFlGroupPartData& internal,
+                              FFlGroupPartData& surface,
+                              FFlGroupPartData& outline);
 
   void createSpecialLines(double XZscale = 0.0);
 
@@ -141,12 +141,12 @@ protected:
                              const IntList::iterator  & splEdgEndPolyIt,
                              const FFlVisFace         * faceToJoin,
                              const VisEdgeRefVecCIter & splEdgeRIt,
-                             const bool               & faceToJoinIsPositive );
+                             bool faceToJoinIsPositive );
 
-  void getPolygonFromFace  ( IntList                  & polygon,
-                             const FFlVisFace         & f,
-                             const VisEdgeRefVecCIter & splitEdgeIt,
-                             const bool               & faceIsPositive );
+  void getPolygonPosFace(IntList& polygon, const FFlVisFace& f,
+                         const VisEdgeRefVecCIter& splitEdgeIt);
+  void getPolygonNegFace(IntList& polygon, const FFlVisFace& f,
+                         const VisEdgeRefVecCIter& splitEdgeIt);
 
 private:
   GroupPartMap myLinkParts;    //!< Internal container for stored geometry
