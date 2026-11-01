@@ -87,14 +87,14 @@ public:
     return true;
   }
 
-  virtual void reset() { myData = myDefaultValue; }
-  virtual void updateDefault() { myDefaultValue = myData; }
-  virtual bool isDefault() const { return myData == myDefaultValue; }
-  virtual bool isDataField() const { return true; }
-  virtual bool isPrintable() const { return true; }
+  void reset() final { myData = myDefaultValue; }
+  void updateDefault() final { myDefaultValue = myData; }
+  bool isDefault() const final { return myData == myDefaultValue; }
+  bool isDataField() const override { return true; }
+  bool isPrintable() const override { return true; }
 
 protected:
-  virtual FFaFieldBase* copy(const FFaFieldBase* field, bool defaultValueToo)
+  FFaFieldBase* copy(const FFaFieldBase* field, bool defaultValueToo) override
   {
     if (this == field || !this->isDataField())
       return this;
@@ -113,8 +113,8 @@ protected:
     return this;
   }
 
-  virtual void write(std::ostream& os) const { os << myData; }
-  virtual void read(std::istream& is) { this->read(is,myData); }
+  void write(std::ostream& os) const override { os << myData; }
+  void read(std::istream& is) override { this->read(is,myData); }
 
 private:
   //! \brief Reads the field value from an input stream.
@@ -141,13 +141,13 @@ class FFaNoPrintField : public FFaField<valueT>
 {
 public:
   //! \brief Returns \e false, since this field should never be printed.
-  virtual bool isPrintable() const { return false; }
+  bool isPrintable() const final { return false; }
 
 protected:
   //! \brief Overridden to do nothing.
-  virtual void write(std::ostream&) const {}
+  void write(std::ostream&) const final {}
   //! \brief Overridden to do nothing.
-  virtual void read(std::istream&) {}
+  void read(std::istream&) final {}
 };
 
 
@@ -160,7 +160,7 @@ class FFaNoCopyField : public FFaField<valueT>
 {
 protected:
   //! \brief Overridden to return \a *this instead of a copy.
-  virtual FFaFieldBase* copy(const FFaFieldBase*, bool) { return this; }
+  FFaFieldBase* copy(const FFaFieldBase*, bool) final { return this; }
 };
 
 
@@ -179,10 +179,10 @@ public:
   bool wasOnFile() const { return isRead; }
 
   //! \brief Returns \e false, since this field should never be printed.
-  virtual bool isPrintable() const { return false; }
+  bool isPrintable() const final { return false; }
 
 protected:
-  virtual FFaFieldBase* copy(const FFaFieldBase* field, bool defaultValueToo)
+  FFaFieldBase* copy(const FFaFieldBase* field, bool defaultValueToo) final
   {
     if (this == field || !this->isDataField())
       return this;
@@ -203,9 +203,9 @@ protected:
   }
 
   //! \brief Overridden to do nothing.
-  virtual void write(std::ostream&) const {}
+  void write(std::ostream&) const final {}
   //! \brief Overridden to set the #isRead flag.
-  virtual void read(std::istream& is)
+  void read(std::istream& is) final
   {
     this->FFaField<T>::read(is);
     isRead = true;

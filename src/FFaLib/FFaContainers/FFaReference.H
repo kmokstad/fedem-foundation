@@ -245,7 +245,7 @@ public:
   bool operator!=(const FFaReference<Type>& p) const { return !this->isEqual(&p); }
 
   //! \brief Returns the class type ID this reference is instantiated over.
-  virtual int getRefClassTypeID() const { return Type::getClassTypeID(); }
+  int getRefClassTypeID() const final { return Type::getClassTypeID(); }
 };
 
 
