@@ -5,6 +5,11 @@
 // This file is part of FEDEM - https://openfedem.org
 ////////////////////////////////////////////////////////////////////////////////
 
+/*!
+  \file FFlLinkHandler.C
+  \brief Container class for finite element models.
+*/
+
 #include <iomanip>
 #include <cfloat>
 
@@ -245,10 +250,6 @@ void FFlLinkHandler::deleteGeometry()
 }
 
 
-/*!
-  Checksum calculation on "all" entries.
-*/
-
 unsigned int FFlLinkHandler::calculateChecksum(int csType, bool rndOff) const
 {
   if (!myChkSum)
@@ -261,8 +262,8 @@ unsigned int FFlLinkHandler::calculateChecksum(int csType, bool rndOff) const
 
 
 /*!
-  Checksum calculation on "important" entries. This include node, element,
-  load and attribute data. Group and visualization data are not included here.
+  The "important" entries include node, element, load and attribute data.
+  Group and visualization data are not included here.
 */
 
 void FFlLinkHandler::calculateChecksum(FFaCheckSum* cs, bool rndOff) const
@@ -682,11 +683,6 @@ void FFlLinkHandler::setRunningIdxOnAppearances()
 #endif
 
 
-/*!
-  Returns the node with the given \a ID.
-  Returns NULL if no such node.
-*/
-
 FFlLinkHandler::NodesIter FFlLinkHandler::getNodeIter(int ID) const
 {
   if (!areNodesSorted) this->sortNodes();
@@ -771,11 +767,6 @@ FFlVDetail* FFlLinkHandler::getDetail(int ID) const
 #endif
 
 
-/*!
-  Returns the element with the given \a ID.
-  Returns NULL if no such element.
-*/
-
 FFlLinkHandler::ElementsIter FFlLinkHandler::getElementIter(int ID) const
 {
   if (!areElementsSorted) this->sortElements();
@@ -793,30 +784,32 @@ FFlElementBase* FFlLinkHandler::getElement(int ID, bool internalID) const
 }
 
 
-/*!
-  Filters out strain coat elements and optionally the stiffness/mass-giving
-  elements which do not have recovery results (like constraint elements).
-*/
-
-static bool filterFiniteElements(FFlElementBase* elm, bool resultLessElements,
-                                 bool keepStrainCoat = false)
+namespace
 {
-  switch (elm->getCathegory()) {
-  case FFlTypeInfoSpec::SOLID_ELM:
-  case FFlTypeInfoSpec::SHELL_ELM:
-  case FFlTypeInfoSpec::BEAM_ELM:
-    return true; // These element types have results
-  case FFlTypeInfoSpec::STRC_ELM:
-    return keepStrainCoat; // Ignore strain coat elements?
-  default:
-    return resultLessElements;
+  /*!
+    Filters out strain coat elements and optionally the stiffness/mass-giving
+    elements which do not have recovery results (like constraint elements).
+  */
+  bool filterFiniteElements(FFlElementBase* elm, bool resultLessElements,
+                            bool keepStrainCoat = false)
+  {
+    switch (elm->getCathegory()) {
+    case FFlTypeInfoSpec::SOLID_ELM:
+    case FFlTypeInfoSpec::SHELL_ELM:
+    case FFlTypeInfoSpec::BEAM_ELM:
+      return true; // These element types have results
+    case FFlTypeInfoSpec::STRC_ELM:
+      return keepStrainCoat; // Ignore strain coat elements?
+    default:
+      return resultLessElements;
+    }
   }
 }
 
 
 /*!
-  Builds the vector of finite elements that contribute to the stiffness matrix.
-  Note that this function must not be invoked before resolve() is called,
+  This methods finds all elements that contribute to the stiffness matrix.
+  Note that this method must not be invoked before resolve() is called,
   or else we'll get a crash (core dump).
 */
 
@@ -874,9 +867,9 @@ int FFlLinkHandler::buildFiniteElementVec(bool allFElements) const
 
 
 /*!
-  Returns the element with the given internal element number (finite elements
-  only, strain coat elements and other DOF-less elements are excluded).
-  Returns NULL if no such element.
+  This method returns a finite element only.
+  Strain coat elements and other DOF-less elements are excluded.
+  Returns NULL if no finite element with the given index.
 */
 
 FFlElementBase* FFlLinkHandler::getFiniteElement(int iel) const
@@ -891,22 +884,12 @@ FFlElementBase* FFlLinkHandler::getFiniteElement(int iel) const
 }
 
 
-/*!
-  Returns the element group with the given \a ID.
-  Returns NULL if no such group.
-*/
-
 FFlGroup* FFlLinkHandler::getGroup(int ID) const
 {
   GroupCIter git = myGroupMap.find(ID);
   return git == myGroupMap.end() ? NULL : git->second;
 }
 
-
-/*!
-  Returns the attribute of the given \a type and with the given \a ID.
-  Returns NULL if no such attribute.
-*/
 
 FFlAttributeBase* FFlLinkHandler::getAttribute(const std::string& type,
                                                int ID) const
@@ -921,10 +904,6 @@ FFlAttributeBase* FFlLinkHandler::getAttribute(const std::string& type,
 }
 
 
-/*!
-  Returns the set of all attributes of the given \a type.
-*/
-
 const AttributeMap& FFlLinkHandler::getAttributes(const std::string& type) const
 {
   AttributeTypeCIter atit = myAttributes.find(type);
@@ -937,13 +916,14 @@ const AttributeMap& FFlLinkHandler::getAttributes(const std::string& type) const
 
 
 /*!
-  Returns all spider reference nodes in the FE model,
-  which are not connected to other elements than the spider itself.
+  This method finds all spider reference nodes in the FE model,
+  which are not connected to other elements than the spider element itself.
 */
 
-bool FFlLinkHandler::getRefNodes(NodesVec& refNodes) const
+size_t FFlLinkHandler::getRefNodes(NodesVec& refNodes, NodesVec& mstNodes) const
 {
   refNodes.clear();
+  mstNodes.clear();
   if (myNodes.empty())
     return false;
 
@@ -964,16 +944,16 @@ bool FFlLinkHandler::getRefNodes(NodesVec& refNodes) const
   for (FFlElementBase* elm : myElements)
     if (elm->getCathegory() == FFlTypeInfoSpec::CONSTRAINT_ELM &&
         elm->getNodeCount() > 2 && elmConnections[elm->getNodeID(1)] == 1)
-      refNodes.push_back(elm->getNode(1));
+    {
+      if (FFlNode* node = elm->getNode(1); node->isSlaveNode())
+        refNodes.push_back(node); // this is a WAVGM reference node
+      else
+        mstNodes.push_back(node); // this is a RGD reference node
+    }
 
-  return refNodes.empty();
+  return refNodes.size() + mstNodes.size();
 }
 
-
-/*!
-  Returns all loads with the given \a ID.
-  Returns \e false if no such loads.
-*/
 
 bool FFlLinkHandler::getLoads(int ID, LoadsVec& loads) const
 {
@@ -991,10 +971,6 @@ bool FFlLinkHandler::getLoads(int ID, LoadsVec& loads) const
 }
 
 
-/*!
-  Returns a set of the external load \a IDs.
-*/
-
 void FFlLinkHandler::getLoadCases(std::set<int>& IDs) const
 {
   IDs.clear();
@@ -1003,20 +979,12 @@ void FFlLinkHandler::getLoadCases(std::set<int>& IDs) const
 }
 
 
-/*!
-  Returns the number of attributes of the given \a type.
-*/
-
 int FFlLinkHandler::getAttributeCount(const std::string& type) const
 {
   AttributeTypeCIter atit = myAttributes.find(type);
   return atit == myAttributes.end() ? 0 : atit->second.size();
 }
 
-
-/*!
-  Returns the number of elements of each type.
-*/
 
 const ElmTypeCount& FFlLinkHandler::getElmTypeCount() const
 {
@@ -1026,10 +994,6 @@ const ElmTypeCount& FFlLinkHandler::getElmTypeCount() const
   return myNumElements;
 }
 
-
-/*!
-  Returns the number of elements of the given \a type.
-*/
 
 int FFlLinkHandler::getElementCount(const std::string& type) const
 {
@@ -1042,7 +1006,6 @@ int FFlLinkHandler::getElementCount(const std::string& type) const
 
 
 /*!
-  Returns the number of elements of the given \a types.
   If \a checkCF is true, only the elements for which
   the calculation flag is set are counted.
 */
@@ -1075,7 +1038,6 @@ int FFlLinkHandler::getElementCount(int types, bool checkCF) const
 
 
 /*!
-  Returns the total number of DOFs in the FE model.
   Unless \a includeExternalDofs is true, only the internal dofs are counted.
 */
 
@@ -1091,8 +1053,7 @@ int FFlLinkHandler::getDofCount(bool includeExternalDofs) const
 
 
 /*!
-  Returns the number of nodes of given \a types.
-  Loose nodes, if any, are not counted.
+  Loose nodes, if any, are not counted by this method.
 */
 
 int FFlLinkHandler::getNodeCount(int types) const
@@ -1111,7 +1072,7 @@ int FFlLinkHandler::getNodeCount(int types) const
 
 
 /*!
-  This method is assumed used by the solvers only (not not the GUI).
+  This method is assumed used by the solvers only (and not by the GUI).
   Therefore, we don't include any loose external nodes here.
 */
 
@@ -1299,8 +1260,7 @@ bool FFlLinkHandler::removeAttribute(const std::string& typeName,
 #ifdef FT_USE_VISUALS
 
 /*!
-  Returns a visual detail object with detail type ON or OFF. If no such
-  detail exists, a new one will be created and added to the model.
+  If no such detail exists, a new one will be created and added to the model.
 */
 
 FFlVDetail* FFlLinkHandler::getPredefDetail(int detailType)
@@ -1331,10 +1291,6 @@ FFlVDetail* FFlLinkHandler::getOffDetail()
 #endif
 
 
-/*!
-  Returns the transformation matrix of all internal coordinate systems.
-*/
-
 void FFlLinkHandler::getAllInternalCoordSys(std::vector<FaMat34>& mxes) const
 {
   mxes.clear();
@@ -1354,18 +1310,19 @@ void FFlLinkHandler::getAllInternalCoordSys(std::vector<FaMat34>& mxes) const
 
 
 /*!
-  Returns a node with (at least) the given number of DOFs (\a dofFilter), that
-  matches the given \a point. If more than one node match the point, return
+  This method finds the node with (at least) the given
+  number of DOFs (\a dofFilter), that matches the specified \a point.
+  If more than one node match the point, return
   the node among these that is either a free node or a WAVGM reference node.
   If more than one such match exist, return the closest node among them.
 
-  TODO: This method does not work well with large tolerances.
+  \todo This method does not work well with large tolerances.
   The tolerance is used as a "all within is coincident".
   In that regime it actually is ID-dependent which node is returned.
   It is supposed to prioritize the nodes like this:
-  1. Replacement node for a WAVGM reference node
-  2. WAVGM reference node
-  3. Closest free node
+  -# Replacement node for a WAVGM reference node
+  -# WAVGM reference node
+  -# Closest free node
   But if a free node is found that happens to be closer than a found
   reference node, the free node will be returned instead.
   There should be two tolerances in this method:
@@ -1451,10 +1408,6 @@ FFlNode* FFlLinkHandler::findFreeNodeAtPoint(const FaVec3& point,
 }
 
 
-/*!
-  Checks if the two nodes \a n1 and \a n2 are connected via a BUSH element.
-*/
-
 bool FFlLinkHandler::areBUSHconnected(FFlNode* n1, FFlNode* n2) const
 {
   if (myBushElements.empty())
@@ -1480,8 +1433,9 @@ int FFlLinkHandler::buildBUSHelementSet() const
 
 
 /*!
-  Creates a new node at \a nodePos, a BUSH element between \a fromNode and the
-  new node, and a CMASS element at \a fromNode. The new node is returned.
+  This method creates a new node at \a nodePos, a BUSH element between
+  \a fromNode and the new node, and a CMASS element at \a fromNode.
+  The new node is returned.
   The elements are created without properties - only topology,
   unless \a Ktra, \a Krot, or \a Mass are non-zero.
 */
@@ -1556,8 +1510,7 @@ FFlNode* FFlLinkHandler::createAttachableNode(FFlNode* fromNode,
 
 
 /*!
-  Returns the Id of the node that is closest to \a nodePos.
-  The actual coordinates for the node is then returned by updating \a nodePos.
+  The actual coordinates for the node is returned by updating \a nodePos.
 */
 
 int FFlLinkHandler::findNode(FaVec3& nodePos, const FaMat34* Tlg) const
@@ -1577,10 +1530,6 @@ int FFlLinkHandler::findNode(FaVec3& nodePos, const FaMat34* Tlg) const
 }
 
 
-/*!
-  Returns the node that is closest to the given \a point.
-*/
-
 FFlNode* FFlLinkHandler::findClosestNode(const FaVec3& point) const
 {
   FFlNode* closest = NULL;
@@ -1598,7 +1547,7 @@ FFlNode* FFlLinkHandler::findClosestNode(const FaVec3& point) const
 
 
 /*!
-  Returns the element within the cathegories \a wantedTypes
+  This method returns the element within the cathegories \a wantedTypes
   that has its node center closest to the given \a point.
   If \a wantedTypes is empty, any element is accepted.
 */
@@ -1627,7 +1576,7 @@ FFlElementBase* FFlLinkHandler::findClosestElement(const FaVec3& point,
 
 
 /*!
-  Returns the element within a specified \a group
+  This method returns the element within a specified \a group
   that has its node center closest to the given \a point.
 */
 
@@ -1647,11 +1596,6 @@ FFlElementBase* FFlLinkHandler::findClosestElement(const FaVec3& point,
   return closest;
 }
 
-
-/*!
-  Convenience method to search for the closest element among elements
-  in all cathegories, or within an element group.
-*/
 
 FFlElementBase* FFlLinkHandler::findClosestElement(const FaVec3& point,
                                                    FFlGroup* group) const
@@ -2159,8 +2103,8 @@ double FFlLinkHandler::getMeanElementSize() const
 
 
 /*!
-  Computes the mass properties of the FE model, i.e., the total mass \a M,
-  the center of gravity \a Xcg and the inertia tensor \a I are computed.
+  This method computes the the total mass \a M,
+  the center of gravity \a Xcg and the inertia tensor \a I for the model.
 */
 
 void FFlLinkHandler::getMassProperties(double& M, FaVec3& Xcg,
@@ -2195,11 +2139,6 @@ void FFlLinkHandler::getMassProperties(double& M, FaVec3& Xcg,
 
 #ifdef FT_USE_VERTEX
 
-/*!
-  Adds a vertex to the vertex container.
-  The running ID of the vertex is also set.
-*/
-
 void FFlLinkHandler::addVertex(FFlVertex* aVertex)
 {
   if (!aVertex) return;
@@ -2212,16 +2151,12 @@ void FFlLinkHandler::addVertex(FFlVertex* aVertex)
 #endif
 
 
-/*!
-  Count the number of elements of each type
-*/
-
 void FFlLinkHandler::countElements() const
 {
   ElmTypeCount::iterator eit;
   for (FFlElementBase* elm : myElements)
     if ((eit = myNumElements.find(elm->getTypeName())) == myNumElements.end())
-      myNumElements[elm->getTypeName()] = 1;
+     myNumElements[elm->getTypeName()] = 1;
     else
       eit->second++;
 }
@@ -2261,7 +2196,6 @@ void FFlLinkHandler::dump(const std::string& heading) const
 
 
 /*!
-  Sorting of elements and nodes in the order of increasing external IDs.
   A warning is issued if duplicated elements or nodes are found.
   If \a deleteDuplicates is true, the latter duplicated entry is deleted.
   \note Deleting duplicated entries is not safe after resolving has been done.
@@ -2370,11 +2304,10 @@ void FFlLinkHandler::sortVisuals() const
 #ifdef FT_USE_CONNECTORS
 
 /*!
-  Creates a connector based on input geometry and the nodal position.
   The elements and nodes are returned through \a cItems.
   The \a spiderType is either:
-   2 - RiGiD element (RBE2)
-   3 - Weighted AVerage Motion element (RBE3)
+  - 2 : RiGiD element (RBE2)
+  - 3 : Weighted AVerage Motion element (RBE3)
 */
 
 int FFlLinkHandler::createConnector(const FFaCompoundGeometry& compound,
@@ -2421,10 +2354,6 @@ int FFlLinkHandler::createConnector(const FFaCompoundGeometry& compound,
   return nodes.size();
 }
 
-
-/*!
-  Deletes the elements and nodes in the connector.
-*/
 
 int FFlLinkHandler::deleteConnector(const FFlConnectorItems& cItems)
 {

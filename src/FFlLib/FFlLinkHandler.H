@@ -5,6 +5,11 @@
 // This file is part of FEDEM - https://openfedem.org
 ////////////////////////////////////////////////////////////////////////////////
 
+/*!
+  \file FFlLinkHandler.H
+  \brief Container class for finite element models.
+*/
+
 #ifndef FFL_LINK_HANDLER_H
 #define FFL_LINK_HANDLER_H
 
@@ -80,17 +85,29 @@ using VisualsCIter = VisualsVec::const_iterator;
 #endif
 
 
+/*!
+  \brief Container class for finite element models.
+  \details This class holds the data representing a finite element (FE) part
+  in a FEDEM model, and associated methods for accessing and manipulating it.
+*/
+
 class FFlLinkHandler
 {
 public:
+  //! \brief Default constructor.
   FFlLinkHandler(size_t maxNodes = 0, size_t maxElms = 0);
+  //! \brief Copy constructor.
   FFlLinkHandler(const FFlLinkHandler& otherLink);
+  //! \brief Constructor for extracting a sub-model from an element group.
   FFlLinkHandler(const FFlGroup& fromGroup);
+  //! \brief The destructor deletes all heap-allocated members.
   ~FFlLinkHandler();
 
+  //! \brief Deleted assignement operator.
   FFlLinkHandler& operator=(const FFlLinkHandler&) = delete;
 
   // Adding entities
+
   bool addElement(FFlElementBase* anElem, bool sortOnInsert = false);
   bool addNode(FFlNode* aNode, bool sortOnInsert = false);
   bool addGroup(FFlGroup* group, bool silence = false);
@@ -106,37 +123,60 @@ public:
   void setRunningIdxOnAppearances();
 #endif
 
-  int  sortElementsAndNodes(bool deleteDuplicates = false) const;
+  //! \brief Sorts elements and nodes in the order of increasing external IDs.:1
+  int sortElementsAndNodes(bool deleteDuplicates = false) const;
 
-  // Getting count of entities
+  //! \brief Enumerator for getting counts of different element cathegories.
+  enum Types {
+    FFL_ALL  = FFlTypeInfoSpec::OTHER_ELM+1, //!< All elements
+    FFL_FEM  = FFlTypeInfoSpec::OTHER_ELM+2, //!< All finite elemnents
+    FFL_STRC = FFlTypeInfoSpec::STRC_ELM     //!< All strain coat elements
+  };
 
-  enum { FFL_ALL = FFlTypeInfoSpec::OTHER_ELM+1,
-         FFL_FEM = FFlTypeInfoSpec::OTHER_ELM+2,
-         FFL_STRC = FFlTypeInfoSpec::STRC_ELM };
-
+  //! \brief Returns the number of elements of each type.
   const ElmTypeCount& getElmTypeCount() const;
+  //! \brief Returns the number of elements of the given \a type.
   int getElementCount(const std::string& type) const;
+  //! \brief Returns the number of elements of the given \a types.
   int getElementCount(int types = FFL_ALL, bool checkCF = false) const;
+  //! \brief Returns the number of nodes of given \a types.
   int getNodeCount(int types = FFL_ALL) const;
+  //! \brief Returns the total number of DOFs in the FE model.
   int getDofCount(bool includeExternalDofs = true) const;
+  //! \brief Returns the number of attributes of the given \a type.
   int getAttributeCount(const std::string& type) const;
+  //! \brief Builds the #myFElements vector.
   int buildFiniteElementVec(bool allFElements = true) const;
 
   // Looking up entities by ID (external or internal)
 
+  //! \brief Returns the element with the given \a ID, or NULL if not found.
   FFlElementBase*   getElement(int ID, bool internalID = false) const;
+  //! \brief Returns the element with the given internal element number.
   FFlElementBase*   getFiniteElement(int iel) const;
+  //! \brief Returns the node with the given \a ID, or NULL if not found.
   FFlNode*          getNode(int ID) const;
+  //! \brief Returns the FE node wit the given \a ID, or NULL if not found.
   FFlNode*          getFENode(int inod) const;
+  //! \brief Returns the element group with given \a ID, or NULL if not found.
   FFlGroup*         getGroup(int ID) const;
+  //! \brief Returns the attribute of the given \a type and \a ID,
+  //! or NULL if not found.
   FFlAttributeBase* getAttribute(const std::string& type, int ID) const;
 #ifdef FT_USE_VISUALS
   FFlVDetail*       getDetail(int ID) const;
   FFlVAppearance*   getAppearance(int ID) const;
 #endif
 
-  bool getRefNodes(NodesVec& refNodes) const;
+  //! \brief finds all free reference nodes in the model.
+  //! \param[out] refNodes RBE3 (or WAVGM) reference nodes
+  //! \param[out] mstNodes RBE2 (or RGD) master nodes
+  //! \return Total number of reference nodes found
+  size_t getRefNodes(NodesVec& refNodes, NodesVec& mstNodes) const;
+
+  //! \brief Returns all loads with the given \a ID.
   bool getLoads(int ID, LoadsVec& loads) const;
+  //! \brief Returns a set of the external load \a IDs.
   void getLoadCases(std::set<int>& IDs) const;
 
   //! \brief External-to-internal node number mapping.
@@ -185,9 +225,10 @@ public:
 #endif
   AttributeTypeCIter attributeTypesEnd() const { return myAttributes.end(); }
 
+  //! \brief Returns the set of all attributes of the given \a type.
   const AttributeMap& getAttributes(const std::string& name) const;
 
-  // Special vertex management access :
+  // Special vertex management access
 
 #ifdef FT_USE_VERTEX
   size_t getVertexCount() const { return myVertices.size(); }
@@ -195,9 +236,10 @@ public:
   bool coLinearVertices(size_t i1, size_t i2, size_t i3,
                         double tolerance = 1.0e-8) const;
   FFlVertex* getVertex(size_t idx) const;
+  //! \brief Adds a vertex to the vertex container #myVertices.
   void addVertex(FFlVertex* aVertex);
 
-  // For each vertex, a vector of elements with the local index of the vertex
+  //! \brief Returns a vector of elements and local index for each vertex.
   const FFlrVxToElmMap& getVxToElementMapping();
 
   using WindowTester = bool(*)(const FaVec3&);
@@ -207,6 +249,7 @@ public:
                          WindowTester isInsideWindow) const;
 #endif
 
+  //! \brief Returns transformation matrices of all internal coordinate systems.
   void getAllInternalCoordSys(std::vector<FaMat34>& mxes) const;
 
   // Utilities :
@@ -214,23 +257,31 @@ public:
   bool getExtents(FaVec3& max, FaVec3& min) const;
   double getMeanElementSize() const;
 
+  //! \brief Computes the mass properties of the FE model.
   void getMassProperties(double& M, FaVec3& Xcg, FFaTensor3& I) const;
 
+  //! \brief Returns the id of the node that is closest to \a nodePos.
   int findNode(FaVec3& nodePos, const FaMat34* Tlg = NULL) const;
 
+  //! \brief Searches for a FE node that matches a given point.
   FFlNode* findFreeNodeAtPoint(const FaVec3& point, double tol,
                                int dofFilter = -1) const;
+  //! \brief Returns the node that is closest to the given \a point.
   FFlNode* findClosestNode(const FaVec3& point) const;
 
+  //! \brief Creates a new node that can be an external node.
   FFlNode* createAttachableNode(FFlNode* fromNode, const FaVec3& nodePos,
                                 FFlConnectorItems* cItems = NULL,
                                 double Ktra = 0.0, double Krot = 0.0,
                                 double Mass = 0.0);
 
+  //! \brief Returns an element with its center closest to the given point.
   FFlElementBase* findClosestElement(const FaVec3& point,
                                      const CathegoryVec& wantedTypes) const;
+  //! \brief Returns the closest element within a sepcified \a group.
   FFlElementBase* findClosestElement(const FaVec3& point,
                                      const FFlGroup& group) const;
+  //! \brief Convenience method to search for the closest element.
   FFlElementBase* findClosestElement(const FaVec3& point,
                                      FFlGroup* group = NULL) const;
 
@@ -268,9 +319,12 @@ public:
   bool hasGeometry() const { return this->getNodeCount() > 0; }
   bool isTooLarge() const { return tooLarge; }
 
+  //! \brief Calculates the checksum with contributions from "all" elements.
   unsigned int calculateChecksum(int csType = FFl::CS_NOEXTINFO,
                                  bool rndOff = true) const;
+  //! \brief Calculates the checksum with contributions from important elements.
   void calculateChecksum(FFaCheckSum* cs, bool rndOff = true) const;
+  //! \brief Calculates the link checksum.
   void calculateChecksum(FFaCheckSum* cs, int csType, bool rndOff) const;
 
   void initiateCalculationFlag(bool status = false);
@@ -288,7 +342,7 @@ public:
   bool setVisAppearance(FFlPartBase* partSpec, const FFlVAppearance* app);
   void updateGroupVisibilityStatus();
 
-  // Predefined details
+  //! \brief Returns a visual detail object with detail type ON or OFF.
   FFlVDetail* getPredefDetail(int detailType);
   FFlVDetail* getOnDetail();
   FFlVDetail* getOffDetail();
@@ -304,9 +358,11 @@ public:
   void dump(const std::string& heading = "") const;
 
 #ifdef FT_USE_CONNECTORS
+  //! \brief Creates a connector based on input geometry and the nodal position.
   int createConnector(const FFaCompoundGeometry& compound,
                       const FaVec3& nodePos, int spiderType,
                       FFlConnectorItems& cItems);
+  //! \brief Deletes the elements and nodes in the connector.
   int deleteConnector(const FFlConnectorItems& cItems);
 #endif
 
@@ -317,8 +373,10 @@ protected:
   using ElementsIter = ElementsVec::const_iterator;
   ElementsIter getElementIter(int ID) const;
 
+  //! \brief Counts the number of elements of each type.
   void countElements() const;
 
+  //! \brief Checks if the two nodes are connected via a BUSH element.
   bool areBUSHconnected(FFlNode* n1, FFlNode* n2) const;
   int  buildBUSHelementSet() const;
 
@@ -336,9 +394,9 @@ protected:
 
   // Model size limits :
 
-  bool   tooLarge;  // set by addNode and addElement
-  size_t nodeLimit; // max number of nodes allowed
-  size_t elmLimit;  // max number of elements allowed
+  bool   tooLarge;  //!< Set by addNode() and addElement()
+  size_t nodeLimit; //!< Max number of nodes allowed
+  size_t elmLimit;  //!< Max number of elements allowed
 
   // Containers :
 
@@ -362,15 +420,23 @@ protected:
   std::map<unsigned int,FFlAttributeBase*> uniqueAtts;
   mutable std::map<FFlNode*,ElementsSet>   myNodeMapping;
 
-  bool                  isResolved;    // Flag to avoid resolving more than once
-  bool                  hasLooseNodes; // true if unconnected nodes are present
-  mutable std::map<int,int> ext2intNode; // external-to-internal node mapping
-  mutable NodesVec      myFEnodes;     // pointers to Finite Element nodes only
-  mutable ElmTypeCount  myNumElements; // the number of elements of each type
-  mutable ElementsVec   myFElements;   // pointers to the Finite Elements only
-  mutable ElementsSet   myBushElements;// pointers to the BUSH elements only
-  Strings               myOP2files;    // files with externally reduced matrices
-  size_t                nGenDofs;      // as read from Nastran bulk data file
+  bool isResolved;    //!< Flag to avoid resolving the topology more than once
+  bool hasLooseNodes; //!< If \e true, the FE model contains unconnected nodes
+
+  //! External-to-internal node number mapping
+  mutable std::map<int,int> ext2intNode;
+  //! Vector or pointers to the Finite Element nodes only
+  mutable NodesVec     myFEnodes;
+  //! Map of element type name to the number of elements of that type
+  mutable ElmTypeCount myNumElements;
+  //! Vector of pointers to the Finite Elements only
+  mutable ElementsVec  myFElements;
+  //! Vector of pointers to all BUSH elements in the model
+  mutable ElementsSet  myBushElements;
+  //! List of files with externally reduced matrices for this model
+  Strings myOP2files;
+  //! Number of component modes, as read from Nastran bulk data file
+  size_t  nGenDofs;
 
   mutable FFaCheckSum*  myChkSum;
   FFlFEResultBase*      myResults;
