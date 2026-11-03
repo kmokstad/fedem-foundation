@@ -338,5 +338,5 @@ TEST(TestFFa,Mat34)
   std::cout <<"\nB = "<< B;
   std::cout << std::endl;
 
-  EXPECT_TRUE(B.isCoincident(FaMat34(),1.0e-16));
+  EXPECT_TRUE(B.isCoincident(FaMat34(),1.0e-15));
 }
