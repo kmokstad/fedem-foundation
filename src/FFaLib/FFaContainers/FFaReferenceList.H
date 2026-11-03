@@ -94,7 +94,7 @@ protected:
   //! \brief Appends a reference to the end of #myRefs.
   void insertRefLast(FFaReferenceBase* ref);
   //! \brief Virtual method for creating a FFaReference of correct type.
-  virtual FFaReferenceBase* createNewReference() = 0;
+  virtual FFaReferenceBase* createNewReference() const = 0;
 
   //! \brief Returns a const_iterator matching a FFaFieldContainer pointer.
   FFaReferenceList::const_iterator findPtr(const FFaFieldContainer* ptr) const;
@@ -352,7 +352,7 @@ private:
     return sr;
   }
 
-  virtual FFaReferenceBase* createNewReference()
+  FFaReferenceBase* createNewReference() const final
   { return static_cast<FFaReferenceBase*>(new FFaReference<Type>()); }
 };
 
